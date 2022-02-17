@@ -355,26 +355,26 @@ namespace relpatches
             u32 display = death_count[mkb::curr_player_idx];
 
             if (display == 0) {
-                sprite->blue = 0;
+                sprite->mult_color.blue = 0;
             }
             else {
-                sprite->blue = 0xff;
+                sprite->mult_color.blue = 0xff;
             }
 
             if (display > 9999) {
-                sprite->g_width = 0.3;
+                sprite->width = 0.3;
             }
             else if (display > 999) {
-                sprite->g_width = 0.4;
+                sprite->width = 0.4;
             }
             else if (display > 99) {
-                sprite->g_width = 0.5;
+                sprite->width = 0.5;
             }
             else if (display > 9) {
-                sprite->g_width = 0.6;
+                sprite->width = 0.6;
             }
             else {
-                sprite->g_width = 1;
+                sprite->width = 1;
             }
 
             mkb::sprintf(sprite->text, "%u", display);
@@ -477,7 +477,6 @@ namespace relpatches
 
             active_ig = nullptr;
             nearest_dist_to_mir = -1.0;
-            return;
         }
 
         float get_distance(Vec3f& vec1, Vec3f& vec2)

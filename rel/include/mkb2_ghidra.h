@@ -205,6 +205,82 @@ struct MenuEntry {
     char * description_ja;
 } __attribute__((__packed__));
 
+typedef struct BmpInfo BmpInfo, *PBmpInfo;
+
+typedef int BOOL32;
+
+typedef struct TplBuffer TplBuffer, *PTplBuffer;
+
+typedef int OSHeapHandle;
+
+typedef struct TplTextureHeader TplTextureHeader, *PTplTextureHeader;
+
+typedef struct GXTexObj GXTexObj, *PGXTexObj;
+
+enum {
+    GX_TF_I4=0,
+    GX_TF_I8=1,
+    GX_TF_IA4=2,
+    GX_TF_IA8=3,
+    GX_TF_RGB565=4,
+    GX_TF_RGB5A3=5,
+    GX_TF_RGBA8=6,
+    GX_TF_CMPR=14,
+    GX_CTF_R4=15,
+    GX_CTF_RA4=16,
+    GX_CTF_RA8=17,
+    GX_CTF_YUVA8=18,
+    GX_CTF_A8=19,
+    GX_CTF_R8=20,
+    GX_CTF_G8=21,
+    GX_CTF_B8=22,
+    GX_CTF_RG8=23,
+    GX_CTF_GB8=24,
+    GX_TF_Z8=25,
+    GX_TF_Z16=26,
+    GX_TF_Z24X8=27,
+    GX_CTF_Z4=28,
+    GX_CTF_Z8M=29,
+    GX_CTF_Z8L=30,
+    GX_CTF_Z16L=31,
+    GX_TF_A8=32
+};
+typedef undefined4 GXTexFmt;
+
+typedef ushort u16;
+
+struct GXTexObj {
+    undefined field_0x0[0x14];
+    GXTexFmt  format; /* Created by retype action */
+    undefined field_0x18[0x8];
+} __attribute__((__packed__));
+
+struct TplBuffer { /* Buffer allocated for TPL files (with 32 extra bytes at the beginning compared to the on-disc TPL file). Amusement Vision TPL is different than standard Gamecube TPL */
+    s32 texture_count;
+    struct TplTextureHeader * texture_headers;
+    void * raw_tpl_buffer; /* Pointer to the raw TPL data loaded from disc */
+    struct GXTexObj * texobjs; /* Array of texobjs, one for each texture in the TPL */
+    undefined field_0x10[0x10];
+} __attribute__((__packed__));
+
+struct BmpInfo { /* Bitmap info. Corresponds to a loaded TPL in bmp/ */
+    BOOL32 is_loaded;
+    char * filepath;
+    char * category;
+    undefined field_0xc[0x4];
+    struct TplBuffer * tpl;
+    OSHeapHandle heap;
+} __attribute__((__packed__));
+
+struct TplTextureHeader {
+    GXTexFmt  format;
+    dword data_offset;
+    u16 width;
+    u16 height;
+    u16 mipmap_count;
+    u16 always_0x1234;
+} __attribute__((__packed__));
+
 typedef struct CoinType CoinType, *PCoinType;
 
 typedef short s16;
@@ -598,8 +674,6 @@ typedef struct GApeAnim GApeAnim, *PGApeAnim;
 
 typedef struct GmaBuffer GmaBuffer, *PGmaBuffer;
 
-typedef struct TplBuffer TplBuffer, *PTplBuffer;
-
 enum {
     GAME_COMMON=0,
     GAME_MAIN=1,
@@ -684,41 +758,7 @@ typedef struct g_thing g_thing, *Pg_thing;
 
 typedef struct GmaModelEntry GmaModelEntry, *PGmaModelEntry;
 
-typedef struct TplTextureHeader TplTextureHeader, *PTplTextureHeader;
-
 typedef struct GmaModelHeader GmaModelHeader, *PGmaModelHeader;
-
-enum {
-    GX_TF_I4=0,
-    GX_TF_I8=1,
-    GX_TF_IA4=2,
-    GX_TF_IA8=3,
-    GX_TF_RGB565=4,
-    GX_TF_RGB5A3=5,
-    GX_TF_RGBA8=6,
-    GX_TF_CMPR=14,
-    GX_CTF_R4=15,
-    GX_CTF_RA4=16,
-    GX_CTF_RA8=17,
-    GX_CTF_YUVA8=18,
-    GX_CTF_A8=19,
-    GX_CTF_R8=20,
-    GX_CTF_G8=21,
-    GX_CTF_B8=22,
-    GX_CTF_RG8=23,
-    GX_CTF_GB8=24,
-    GX_TF_Z8=25,
-    GX_TF_Z16=26,
-    GX_TF_Z24X8=27,
-    GX_CTF_Z4=28,
-    GX_CTF_Z8M=29,
-    GX_CTF_Z8L=30,
-    GX_CTF_Z16L=31,
-    GX_TF_A8=32
-};
-typedef undefined4 GXTexFmt;
-
-typedef ushort u16;
 
 enum { /* Per-GMA model attributes */
     GCMF_ATTR_16BIT=1,
@@ -729,8 +769,6 @@ enum { /* Per-GMA model attributes */
 typedef undefined4 GcmfAttributes;
 
 typedef signed char s8;
-
-typedef struct GXTexObj GXTexObj, *PGXTexObj;
 
 struct Quat {
     f32 x;
@@ -797,14 +835,6 @@ struct g_thing {
     undefined field_0xc[0x1c];
 } __attribute__((__packed__));
 
-struct TplBuffer { /* Buffer allocated for TPL files (with 32 extra bytes at the beginning compared to the on-disc TPL file). Amusement Vision TPL is different than standard Gamecube TPL */
-    s32 texture_count;
-    struct TplTextureHeader * texture_headers;
-    void * raw_tpl_buffer; /* Pointer to the raw TPL data loaded from disc */
-    dword g_initially_zero;
-    undefined field_0x10[0x10];
-} __attribute__((__packed__));
-
 struct GmaBuffer { /* Represents the first 32 bytes of buffer allocated for loaded GMA files. The first 32 bytes are extra; not part of the original GMA file */
     s32 model_count;
     void * model_list_ptr; /* Pointer to the first model (after GMA header) */
@@ -812,15 +842,6 @@ struct GmaBuffer { /* Represents the first 32 bytes of buffer allocated for load
     dword model_names_ptr;
     dword g_initially_zero;
     undefined field_0x14[0xc];
-} __attribute__((__packed__));
-
-struct TplTextureHeader {
-    GXTexFmt  format;
-    dword data_offset;
-    u16 width;
-    u16 height;
-    u16 mipmap_count;
-    u16 always_0x1234;
 } __attribute__((__packed__));
 
 struct SKLInfo {
@@ -869,12 +890,6 @@ struct ARCHandle { /* I don't actually know the struct contents in the slightest
     s32 e;
     s32 f;
     s32 g;
-} __attribute__((__packed__));
-
-struct GXTexObj {
-    undefined field_0x0[0x14];
-    GXTexFmt  format; /* Created by retype action */
-    undefined field_0x18[0x8];
 } __attribute__((__packed__));
 
 struct GApeAnim { /* Unknown length -Crafted */
@@ -1125,6 +1140,13 @@ typedef undefined4 MainGameMode;
 
 typedef struct Sprite Sprite, *PSprite;
 
+enum { /* How to render the sprite if a disp() function is not provided */
+    SPRT_TEXT=0,
+    SPRT_BMP=1,
+    SPRT_TEXTURE=2
+};
+typedef undefined1 SpriteType;
+
 enum {
     FONT_ASCII=0,
     FONT_ASC_8x16=1,
@@ -1274,9 +1296,9 @@ enum {
 };
 typedef undefined1 Font8;
 
-typedef struct SpriteTex SpriteTex, *PSpriteTex;
+typedef struct Rgb24 Rgb24, *PRgb24;
 
-typedef int OSHeapHandle;
+typedef struct SpriteTex SpriteTex, *PSpriteTex;
 
 typedef struct DVDFileInfo DVDFileInfo, *PDVDFileInfo;
 
@@ -1284,55 +1306,57 @@ typedef struct DVDCommandBlock DVDCommandBlock, *PDVDCommandBlock;
 
 typedef struct DVDDiskID DVDDiskID, *PDVDDiskID;
 
+struct Rgb24 {
+    u8 red;
+    u8 green;
+    u8 blue;
+} __attribute__((__packed__));
+
 struct Sprite {
-    u8 g_unk_flags; /* Whether it's visible or not? */
-    Font8  g_font2; /* Seems to affect the font size/type on the pause menu? */
+    SpriteType  type; /* Whether it's visible or not? */
+    Font8  font; /* Seems to affect the font size/type on the pause menu? */
     u8 index;
     undefined1 field3_0x3;
     struct Vec2f pos;
-    u8 red;
-    u8 green;
-    u8 blue; /* Actually called "bule" in game.. yup */
+    struct Rgb24 mult_color;
     Font8  g_probably_not_font; /* Is this actually a font? Or is it some kind of ID? On the pause menu sprite, the monkey head won't track the menu selection unless it's "4" */
     s16 g_counter; /* At least in the press start/select text sprites, this is used as some kind of counter when ticking */
-    s16 field10_0x12;
+    s16 field8_0x12;
     undefined field_0x14[0xc];
-    float field23_0x20;
-    undefined4 field24_0x24;
+    float field21_0x20;
+    undefined4 field22_0x24;
     undefined field_0x28[0x4];
     struct SpriteTex * tex;
     void (* dest_func)(struct Sprite *);
     void (* tick_func)(u8 *, struct Sprite *);
     void (* disp_func)(struct Sprite *);
-    undefined2 g_texture_id;
+    undefined2 bmp;
     undefined field_0x3e[0x2];
-    float g_width;
-    float g_height;
-    float g_depth;
-    s32 g_some_frame_count_or_pointer; /* Is this `para1`? */
-    undefined4 field40_0x50; /* para2? */
-    undefined4 field41_0x54; /* para3? */
-    float g_lerp_value; /* fpara1? At least in the SCORE sprite, this is the visual displayed score which counts up towards the actual score */
-    float field43_0x5c; /* fpara2? */
-    float field44_0x60; /* fpara3? */
+    float width;
+    float height;
+    float depth;
+    s32 para1; /* Arbitrary int param 1 */
+    s32 para2; /* Arbitrary int param 2 */
+    s32 para3; /* Arbitrary int param 3 */
+    f32 fpara1; /* Arbitrary float param 1 */
+    f32 fpara2; /* Arbitrary float param 2 */
+    f32 fpara3; /* Arbitrary float param 3 */
     struct Sprite * prev_sprite;
     struct Sprite * next_sprite;
-    undefined4 field47_0x6c;
-    undefined4 field48_0x70;
-    undefined4 field49_0x74;
-    undefined4 field50_0x78;
+    undefined4 field45_0x6c;
+    undefined4 field46_0x70;
+    undefined4 field47_0x74;
+    undefined4 field48_0x78;
     undefined field_0x7c[0x4];
-    float g_opacity; /* called trnsl in game? */
-    u8 glow_red;
-    u8 glow_green;
-    u8 glow_blue;
+    float alpha; /* called trnsl in game? */
+    struct Rgb24 add_color;
     undefined field_0x87[0x1];
-    u32 g_flags;
-    undefined field_0x8c[0x4];
-    undefined4 field65_0x90;
-    undefined4 field66_0x94;
-    float field67_0x98;
-    float field68_0x9c;
+    u32 g_flags1;
+    u32 g_flags2;
+    f32 u1;
+    f32 v1;
+    f32 u2;
+    f32 v2;
     char text[48]; /* If this sprite displays text, this is what it shows, otherwise this is usually just an identifier name */
 } __attribute__((__packed__));
 
@@ -1374,7 +1398,7 @@ struct SpriteTex {
     s8 field1_0x1;
     u16 field2_0x2;
     s32 tex_index;
-    struct GXTexObj tex;
+    struct GXTexObj texobj;
     void * tex_data;
     u32 tex_data_size;
     u16 width;
@@ -1391,7 +1415,7 @@ struct HeapConfig { /* Set of sizes for game heaps */
     u32 bg_heap_size;
     u32 chara_heap_size;
     u32 replay_heap_size;
-    u32 g_flags;
+    u32 flags;
 } __attribute__((__packed__));
 
 typedef struct GSomethingWithPadMotorsStruct GSomethingWithPadMotorsStruct, *PGSomethingWithPadMotorsStruct;
@@ -1404,19 +1428,31 @@ struct GSomethingWithPadMotorsStruct {
 
 typedef struct SpriteDrawRequest SpriteDrawRequest, *PSpriteDrawRequest;
 
+enum {
+    SDRF_G_SCREENFADE_RELATED=262144,
+    SDRF_FLIP_X=524288,
+    SDRF_FLIP_Y=1048576,
+    SDRF_G_ID_FORMAT_RELATED=4194304,
+    SDRF_G_X_SCALE_RELATED=16777216
+};
+typedef undefined4 SpriteDrawReqFlags;
+
 struct SpriteDrawRequest { /* Used by Sprite disp() functions to render a texture on the screen, sometimes multiple times per disp() call to render multiple things on-screen per Sprite object */
-    undefined field_0x0[0x8];
-    float field8_0x8;
-    float field9_0xc;
-    float field10_0x10;
-    float field11_0x14;
+    s32 id; /* At least some of the time: bits 16-24 are category, 24-31 are id in the category. Sometimes used as just an ID with no category? */
+    struct Vec3f pos;
+    struct Vec2f scale;
     float u1; /* First texture coordinate, U component */
     float v1; /* First texture coordinate, V component */
     float u2; /* Second texture coordinate, U component */
     float v2; /* Second texture coordinate, V component */
-    undefined field_0x28[0x4];
-    float field20_0x2c;
-    undefined field_0x30[0x20];
+    s32 rot_z; /* For some reason this is 32-bit instead of s16? */
+    float alpha;
+    s32 g_unk1;
+    SpriteDrawReqFlags  flags;
+    u32 mult_color; /* RGB24 multiply blend color */
+    u32 add_color; /* RGB24 add blend color */
+    s16 g_some_x_value;
+    undefined field_0x42[0xe];
 } __attribute__((__packed__));
 
 typedef struct CmPlayerProgress CmPlayerProgress, *PCmPlayerProgress;
@@ -1592,6 +1628,14 @@ struct GSomeSoundStruct {
     char g_sfx_span;
     char g_sfx_grp;
     int g_player_id;
+} __attribute__((__packed__));
+
+typedef struct GSomeSpriteStruct GSomeSpriteStruct, *PGSomeSpriteStruct;
+
+struct GSomeSpriteStruct {
+    struct Sprite * g_some_sprite;
+    struct GSomeSpriteStruct * g_prev;
+    struct GSomeSpriteStruct * g_next;
 } __attribute__((__packed__));
 
 typedef struct Item Item, *PItem;
@@ -1975,8 +2019,6 @@ struct Itemgroup { /* Contains the current animation-related state of each item 
 } __attribute__((__packed__));
 
 typedef struct StoryModeSaveFile StoryModeSaveFile, *PStoryModeSaveFile;
-
-typedef int BOOL32;
 
 struct StoryModeSaveFile {
     undefined field0_0x0[4];
@@ -4977,6 +5019,8 @@ extern "C" {
     extern undefined * switchdataD_8037ed54;
     extern pointer switchdataD_8037ed78;
     extern undefined * switchdataD_8037edf8;
+    extern struct BmpInfo bmp_infos[25];
+    extern undefined * bmp_tex_names;
     extern pointer switchdataD_803809d0;
     extern struct SpriteDrawRequest g_some_sprite_related_obj;
     extern undefined4 monkey_flags;
@@ -5171,7 +5215,7 @@ extern "C" {
     extern undefined4 g_some_other_heap_hi;
     extern undefined4 g_some_dead_heap_mem_lo;
     extern undefined4 g_some_dead_heap_mem_hi;
-    extern undefined4 g_current_heap_config_idx;
+    extern undefined4 g_curr_heap_config_idx;
     extern undefined4 main_heap_size;
     extern undefined4 stage_heap_size;
     extern undefined4 bg_heap_size;
@@ -5366,6 +5410,9 @@ extern "C" {
     extern undefined4 g_some_goalbag1;
     extern undefined4 g_some_goalbag2;
     extern struct Sprite sprites[80];
+    extern struct GSomeSpriteStruct g_some_sprite_structs[82];
+    extern undefined4 g_some_sprite_width;
+    extern undefined4 g_some_sprite_height;
     extern undefined4 g_screenfade_flags;
     extern u32 g_screenfade_color;
     extern undefined4 g_screenfading1;
@@ -7017,7 +7064,7 @@ extern "C" {
     void g_avdisp_func8(int param_1);
     void g_maybe_something_with_normals(int param_1);
     void g_init_gma(struct GmaBuffer * gma_buffer, struct GmaHeader * gma_header, struct TplBuffer * tpl);
-    int g_init_gma_model_materials(struct GmaModelHeader * model, struct TplBuffer * tpl, struct GXTexObj * g_texobj_array);
+    int g_init_gma_model_materials(struct GmaModelHeader * model, struct TplBuffer * tpl, struct GXTexObj * texobj_array);
     void g_memcpy_using_locked_cache(void * dest, void * curr_src_1_1_1, size_t count);
     void g_something_with_locked_cache_2(void * param_1, uint param_2, uint param_3);
     void memcpy2(void * dest, void * src, size_t count);
@@ -7360,8 +7407,8 @@ extern "C" {
     void g_remake_initial_main_heap_somehow(void);
     void g_setup_and_create_game_heaps(void);
     void g_something_with_sound7_and_game_heaps(int param_1);
-    void g_create_game_heaps(int heap_config_idx);
-    void g_destroy_game_heaps(void);
+    void create_game_heaps(int heap_config_idx);
+    void destroy_game_heaps(void);
     void * alloc_from_heap_or_panic(OSHeapHandle heap, u32 size, char * file, int line);
     void g_set_some_initial_state(void);
     void mode_tick(void);
@@ -7573,8 +7620,8 @@ extern "C" {
     void threshold_analog_inputs(void);
     void g_calc_frames_since_last_input_change(void);
     void merge_inputs(void);
-    uint * g_something_with_possibly_compressed_bitmaps(char * file_path);
-    void g_something_with_bmp_bmp_com(int param_1);
+    TplBuffer * load_bmp(char * filepath);
+    void g_something_with_bmp_bmp_com(int g_idx);
     void g_something_with_freeing_memory(int param_1);
     void g_zero_some_sprite_related_state(void);
     void draw_ui(void);
@@ -7739,7 +7786,7 @@ extern "C" {
     void g_related_to_sphere_collision_objs(struct PhysicsBall * param_1, struct StagedefColiSphere * param_2);
     void g_related_to_cone_collision_objs(struct PhysicsBall * param_1, struct StagedefColiCone * param_2);
     void g_something_with_physicsball_restitution(struct PhysicsBall * physicsball, struct Vec3f * param_2);
-    BOOL32 does_line_intersect_rect(struct Vec3f * pos1, struct Vec3f * pos2, struct Rect * rect);
+    BOOL32 does_line_intersect_rect(struct Vec3f * lineStart, struct Vec3f * lineEnd, struct Rect * rect);
     void stobj_jamabar_child_coli(struct PhysicsBall * physicsball, struct Stobj * stobj);
     void raycast_stage_down(struct Vec3f * origin, struct RaycastHit * out_hit, struct Vec3f * out_vel_at_point);
     BOOL32 raycast_tri(struct Vec3f * line_origin, struct Vec3f * line_dir, struct StagedefColiTri * tri);
@@ -8263,7 +8310,7 @@ extern "C" {
     void event_sprite_init(void);
     void event_sprite_tick(void);
     void event_sprite_dest(void);
-    void g_something_with_sprites(char * param_1);
+    void draw_sprite(struct Sprite * sprite);
     void call_something_with_bmp_bmp_com(int param_1);
     void g_something_with_iteratively_freeing_memory(void);
     Sprite * create_sprite(void);
@@ -8284,6 +8331,9 @@ extern "C" {
     void g_set_smth_with_font_drawing1(float param_1, float param_2);
     void g_draw_str_with_font(byte * param_1);
     void g_printf_draw_with_font(double param_1, double param_2, double param_3, double param_4, double param_5, double param_6, double param_7, double param_8, char * g_format, undefined4 param_10, undefined4 param_11, undefined4 param_12, undefined4 param_13, undefined4 param_14, undefined4 param_15, undefined4 param_16);
+    void draw_text_sprite(struct Sprite * sprite);
+    void draw_bmp_sprite(struct Sprite * sprite);
+    void draw_texture_sprite(struct Sprite * sprite);
     void g_some_printf_function_3(double param_1, undefined8 param_2, undefined8 param_3, undefined8 param_4, undefined8 param_5, undefined8 param_6, undefined8 param_7, undefined8 param_8, char * param_9, undefined4 param_10, undefined4 param_11, undefined4 param_12, undefined4 param_13, undefined4 param_14, undefined4 param_15, undefined4 param_16);
     void g_get_string_sprite_width(int param_1);
     void fade_screen_to_color(uint flags, u32 color, uint frames);
