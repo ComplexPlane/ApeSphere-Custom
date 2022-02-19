@@ -523,7 +523,7 @@ namespace relpatches
         void init_main_game()
         {
             patch::write_branch_bl(relutil::relocate_addr(0x808fcac4), reinterpret_cast<void*>(main::get_monkey_id_hook));
-            patch::write_branch_bl(relutil::relocate_addr(0x08ff120), reinterpret_cast<void*>(main::get_monkey_id_hook));
+            patch::write_branch_bl(relutil::relocate_addr(0x808ff120), reinterpret_cast<void*>(main::get_monkey_id_hook));
             patch::write_branch_bl(relutil::relocate_addr(0x80908894), reinterpret_cast<void*>(main::get_monkey_id_hook));
 
             patch::write_branch_bl(relutil::relocate_addr(0x80906368), reinterpret_cast<void*>(set_nameentry_filename));

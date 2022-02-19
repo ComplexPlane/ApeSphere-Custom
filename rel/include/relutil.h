@@ -17,6 +17,5 @@ void* compute_mainloop_reldata_boundary();
  * It is not necessary to "relocate" symbols which appear in mkb2.us.lst .
  */
 void* relocate_addr(u32 vanilla_addr);
-void* relocate_ptr(void* vanilla_ptr);
 
 }  // namespace relutil

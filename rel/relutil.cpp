@@ -1,4 +1,5 @@
 #include "relutil.h"
+#include "log.h"
 
 #include <mkb.h>
 
@@ -103,37 +104,29 @@ static RelHeader* find_loaded_rel(ModuleId id) {
 }
 
 void* relocate_addr(u32 vanilla_addr) {
-    return relocate_ptr(reinterpret_cast<void*>(vanilla_addr));
-}
-
-void* relocate_ptr(void* vanilla_ptr) {
-    u32 vanilla_addr = reinterpret_cast<u32>(vanilla_ptr);
     for (const auto& region : s_vanilla_regions) {
-        // Vanilla pointer not in this region
+
         u32 region_addr = reinterpret_cast<u32>(region.vanilla_ptr);
-        if (!(vanilla_addr >= region_addr && vanilla_addr < (region_addr + region.size))) {
-            continue;
-        }
+        if (vanilla_addr >= region_addr && vanilla_addr < (region_addr + region.size)) {
+            // Vanilla pointer can be treated as absolute address
+            if (region.id == ModuleId::Dol) {
+                return reinterpret_cast<void*>(vanilla_addr);
+            }
 
-        // Vanilla pointer can be treated as absolute address
-        if (region.id == ModuleId::Dol) {
-            return vanilla_ptr;
-        }
+            // Find the rel location, if it's loaded at all
+            RelHeader* module = find_loaded_rel(region.id);
+            if (module != nullptr) {
+                u32 live_addr;
+                if (region.is_bss) {
+                    live_addr = module->section_info_offset[module->bss_section].addr_and_2_flags & 0xFFFFFFFC;
+                } else {
+                    live_addr = reinterpret_cast<u32>(module);
+                }
 
-        // Find current rel location
-        RelHeader* module = find_loaded_rel(region.id);
-        if (module == nullptr) {
-            return nullptr;
+                u32 relocated_addr = live_addr + (vanilla_addr - region_addr);
+                return reinterpret_cast<void*>(relocated_addr);
+            }
         }
-
-        u32 live_addr;
-        if (region.is_bss) {
-            live_addr = module->section_info_offset[module->bss_section].addr_and_2_flags & 0xFFFFFFFC;
-        } else {
-            live_addr = reinterpret_cast<u32>(module);
-        }
-        u32 relocated_addr = live_addr + (vanilla_addr - region_addr);
-        return reinterpret_cast<void*>(relocated_addr);
     }
 
     return nullptr;
