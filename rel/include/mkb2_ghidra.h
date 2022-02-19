@@ -7950,7 +7950,7 @@ extern "C" {
     void effect_bgmst_gen_cloud_dest(struct Effect * effect);
     uint effect_bgstm_rainripple_init(int param_1);
     void effect_bgstm_rainripple_tick(int param_1);
-    void effect_bgstm_rainripple_disp(int param_1);
+    void effect_bgstm_rainripple_disp(struct Effect * effect);
     void effect_bgstm_rainripple_dest(struct Effect * effect);
     void effect_bgmst_water_init(void);
     void effect_bgmst_water_tick(void);

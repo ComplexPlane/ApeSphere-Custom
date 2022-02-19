@@ -7,6 +7,7 @@
 
 #include "patch.h"
 #include "assembly.h"
+#include "relutil.h"
 
 namespace draw
 {
@@ -25,8 +26,8 @@ const mkb::GXColor GREEN = {0x00, 0xff, 0x00, 0xff};
 
 void init()
 {
-    patch::write_branch(reinterpret_cast<void *>(0x802aeca4),
-                        reinterpret_cast<void *>(main::full_debug_text_color));
+    patch::write_branch(relutil::relocate_addr(0x802aeca4),
+                        reinterpret_cast<void*>(main::full_debug_text_color));
 }
 
 void debug_text_palette()

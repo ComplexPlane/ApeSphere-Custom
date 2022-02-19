@@ -72,7 +72,7 @@ namespace patch {
             write_branch(&func_instrs[0], dest);
 
             // Use the old hooked func as the trampoline dest
-            *tramp_dest = reinterpret_cast<void *>(old_dest);
+            *tramp_dest = reinterpret_cast<void*>(old_dest);
 
         } else {
             // Func has not been hooked yet

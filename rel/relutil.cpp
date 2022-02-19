@@ -4,6 +4,23 @@
 
 namespace relutil {
 
+enum class ModuleId {
+    Dol = 0,
+    MainLoop = 1,
+    MainGame = 2,
+    SelNgc = 3,
+    WorkshopMod = 100,
+    PracticeMod = 101,
+};
+
+// Start of a loaded DOL, REL, or REL BSS
+struct Region {
+    ModuleId id;
+    void* vanilla_ptr;
+    u32 size;
+    bool is_bss;
+};
+
 struct RelEntry {
     u16 offset;
     u8 type;
@@ -18,12 +35,18 @@ struct Imp {
 };
 static_assert(sizeof(Imp) == 0x8);
 
+struct SectionInfo {
+    u32 addr_and_2_flags;
+    u32 size;
+};
+static_assert(sizeof(SectionInfo) == 0x8);
+
 struct RelHeader {
     u32 id;
     RelHeader* next;
     RelHeader* prev;
     u32 num_sections;
-    void* section_info_offset;
+    SectionInfo* section_info_offset;
     char* name_offset;
     u32 name_size;
     u32 version;
@@ -44,6 +67,16 @@ struct RelHeader {
 };
 static_assert(sizeof(RelHeader) == 0x4C);
 
+static Region s_vanilla_regions[] = {
+    { ModuleId::Dol, reinterpret_cast<void*>(0x80000000), 0x199F84, false },
+    { ModuleId::MainLoop, reinterpret_cast<void*>(0x80270100), 0x2DC7CC, false },
+    { ModuleId::MainLoop, reinterpret_cast<void*>(0x8054C8e0), 0xDDA4C, true },
+    { ModuleId::MainGame, reinterpret_cast<void*>(0x808F3FE0), 0x8B484, false },
+    { ModuleId::MainGame, reinterpret_cast<void*>(0x8097F4A0), 0x65F0, true },
+    { ModuleId::SelNgc, reinterpret_cast<void*>(0x808F3FE0), 0x55C87, false },
+    { ModuleId::SelNgc, reinterpret_cast<void*>(0x80949CA0), 0x8BD4, true },
+};
+
 void* compute_mainloop_reldata_boundary() {
     RelHeader* module = *reinterpret_cast<RelHeader**>(0x800030C8);
     for (u32 imp_idx = 0; imp_idx * sizeof(Imp) < module->imp_size; imp_idx++) {
@@ -55,6 +88,54 @@ void* compute_mainloop_reldata_boundary() {
             ;
         return &imp.rel_offset[rel_idx + 1];
     }
+    return nullptr;
+}
+
+static RelHeader* find_loaded_rel(ModuleId id) {
+    RelHeader* module = *reinterpret_cast<RelHeader**>(0x800030C8);
+    while (module != nullptr) {
+        if (module->id == static_cast<u32>(id)) {
+            return module;
+        }
+        module = module->next;
+    }
+    return nullptr;
+}
+
+void* relocate_addr(u32 vanilla_addr) {
+    return relocate_ptr(reinterpret_cast<void*>(vanilla_addr));
+}
+
+void* relocate_ptr(void* vanilla_ptr) {
+    u32 vanilla_addr = reinterpret_cast<u32>(vanilla_ptr);
+    for (const auto& region : s_vanilla_regions) {
+        // Vanilla pointer not in this region
+        u32 region_addr = reinterpret_cast<u32>(region.vanilla_ptr);
+        if (!(vanilla_addr >= region_addr && vanilla_addr < (region_addr + region.size))) {
+            continue;
+        }
+
+        // Vanilla pointer can be treated as absolute address
+        if (region.id == ModuleId::Dol) {
+            return vanilla_ptr;
+        }
+
+        // Find current rel location
+        RelHeader* module = find_loaded_rel(region.id);
+        if (module == nullptr) {
+            return nullptr;
+        }
+
+        u32 live_addr;
+        if (region.is_bss) {
+            live_addr = module->section_info_offset[module->bss_section].addr_and_2_flags & 0xFFFFFFFC;
+        } else {
+            live_addr = reinterpret_cast<u32>(module);
+        }
+        u32 relocated_addr = live_addr + (vanilla_addr - region_addr);
+        return reinterpret_cast<void*>(relocated_addr);
+    }
+
     return nullptr;
 }
 

@@ -4,6 +4,7 @@
 #include "assembly.h"
 #include "ppcutil.h"
 #include "pad.h"
+#include "relutil.h"
 #include <cstdio>
 
 namespace relpatches
@@ -235,7 +236,7 @@ namespace relpatches
     // 0x2c00ffff = cmpwi r0, 0xffff
     void remove_desert_haze::init_main_loop()
     {
-        patch::write_word(reinterpret_cast<void*>(0x802e4ed8), 0x2c00ffff);
+        patch::write_word(relutil::relocate_addr(0x802e4ed8), 0x2c00ffff);
     }
 
     // Hooks right before the call to SoftStreamStart, then nops the
@@ -245,21 +246,21 @@ namespace relpatches
     // the submode indicates we're currently on a stage, or if we're on the 'Retry' screen.
     void story_continuous_music::init_main_loop()
     {
-        patch::write_branch_bl(reinterpret_cast<void*>(0x802a5c34), reinterpret_cast<void*>(main::story_mode_music_hook));
-        patch::write_nop(reinterpret_cast<void*>(0x80273aa0));
+        patch::write_branch_bl(relutil::relocate_addr(0x802a5c34), reinterpret_cast<void*>(main::story_mode_music_hook));
+        patch::write_nop(relutil::relocate_addr(0x80273aa0));
     }
 
     // Nop a call to a function that decreases in-game volume on pause
     void no_music_vol_decrease_on_pause::init_main_loop()
     {
-        patch::write_nop(reinterpret_cast<void*>(0x802a32a8));
+        patch::write_nop(relutil::relocate_addr(0x802a32a8));
     }
 
     // Nop out calls to start the hurry-up music. Call after main_game load
     void no_hurry_up_music::init_main_game()
     {
-        patch::write_nop(reinterpret_cast<void*>(0x808f509c));
-        patch::write_nop(reinterpret_cast<void*>(0x808f50a4));
+        patch::write_nop(relutil::relocate_addr(0x808f509c));
+        patch::write_nop(relutil::relocate_addr(0x808f50a4));
     }
 
     // The init function breaks the "Time Over" sound, as it checks to see if the
@@ -275,14 +276,14 @@ namespace relpatches
     // is 348 when determining whether or not to handle level loading specially
     void fix_revolution_slot::init_main_loop()
     {
-        patch::write_word(reinterpret_cast<void*>(0x802ca9fc), PPC_INSTR_LI(PPC_R3, 0x0));
+        patch::write_word(relutil::relocate_addr(0x802ca9fc), PPC_INSTR_LI(PPC_R3, 0x0));
     }
 
     // Always return 'true' for a specific function that checks if the stage ID
     // belongs to a slot normally used for party games.
     void fix_wormhole_surfaces::init_main_loop()
     {
-        patch::write_word(reinterpret_cast<void*>(0x802c8ce4), PPC_INSTR_LI(PPC_R0, 0x1));
+        patch::write_word(relutil::relocate_addr(0x802c8ce4), PPC_INSTR_LI(PPC_R0, 0x1));
     }
 
     // Always compare the stage ID to 0xFFFF when these camera functions check
@@ -290,25 +291,25 @@ namespace relpatches
     // 0x2c00ffff = cmpwi r0. 0xFFFF
     void fix_labyrinth_camera::init_main_loop()
     {
-        patch::write_word(reinterpret_cast<void*>(0x802858D4), 0x2c00ffff);
-        patch::write_word(reinterpret_cast<void*>(0x802874BC), 0x2c00ffff);
-        patch::write_word(reinterpret_cast<void*>(0x8028751C), 0x2c00ffff);
-        patch::write_word(reinterpret_cast<void*>(0x802880EC), 0x2c00ffff);
-        patch::write_word(reinterpret_cast<void*>(0x802881D4), 0x2c00ffff);
-        patch::write_word(reinterpret_cast<void*>(0x802883B4), 0x2c00ffff);
-        patch::write_word(reinterpret_cast<void*>(0x802886B8), 0x2c00ffff);
-        patch::write_word(reinterpret_cast<void*>(0x8028BF44), 0x2c00ffff);
-        patch::write_word(reinterpret_cast<void*>(0x8028C1CC), 0x2c00ffff);
-        patch::write_word(reinterpret_cast<void*>(0x8028C650), 0x2c00ffff);
-        patch::write_word(reinterpret_cast<void*>(0x8028CA84), 0x2c00ffff);
-        patch::write_word(reinterpret_cast<void*>(0x80291338), 0x2c00ffff);
-        patch::write_word(reinterpret_cast<void*>(0x80291420), 0x2c00ffff);
-        patch::write_word(reinterpret_cast<void*>(0x80291664), 0x2c00ffff);
-        patch::write_word(reinterpret_cast<void*>(0x80291904), 0x2c00ffff);
-        patch::write_word(reinterpret_cast<void*>(0x80291930), 0x2c00ffff);
-        patch::write_word(reinterpret_cast<void*>(0x80291960), 0x2c00ffff);
-        patch::write_word(reinterpret_cast<void*>(0x8029198C), 0x2c00ffff);
-        patch::write_word(reinterpret_cast<void*>(0x80291AEC), 0x2c00ffff);
+        patch::write_word(relutil::relocate_addr(0x802858D4), 0x2c00ffff);
+        patch::write_word(relutil::relocate_addr(0x802874BC), 0x2c00ffff);
+        patch::write_word(relutil::relocate_addr(0x8028751C), 0x2c00ffff);
+        patch::write_word(relutil::relocate_addr(0x802880EC), 0x2c00ffff);
+        patch::write_word(relutil::relocate_addr(0x802881D4), 0x2c00ffff);
+        patch::write_word(relutil::relocate_addr(0x802883B4), 0x2c00ffff);
+        patch::write_word(relutil::relocate_addr(0x802886B8), 0x2c00ffff);
+        patch::write_word(relutil::relocate_addr(0x8028BF44), 0x2c00ffff);
+        patch::write_word(relutil::relocate_addr(0x8028C1CC), 0x2c00ffff);
+        patch::write_word(relutil::relocate_addr(0x8028C650), 0x2c00ffff);
+        patch::write_word(relutil::relocate_addr(0x8028CA84), 0x2c00ffff);
+        patch::write_word(relutil::relocate_addr(0x80291338), 0x2c00ffff);
+        patch::write_word(relutil::relocate_addr(0x80291420), 0x2c00ffff);
+        patch::write_word(relutil::relocate_addr(0x80291664), 0x2c00ffff);
+        patch::write_word(relutil::relocate_addr(0x80291904), 0x2c00ffff);
+        patch::write_word(relutil::relocate_addr(0x80291930), 0x2c00ffff);
+        patch::write_word(relutil::relocate_addr(0x80291960), 0x2c00ffff);
+        patch::write_word(relutil::relocate_addr(0x8029198C), 0x2c00ffff);
+        patch::write_word(relutil::relocate_addr(0x80291AEC), 0x2c00ffff);
     }
 
     namespace challenge_death_count {
@@ -322,9 +323,9 @@ namespace relpatches
         {
             mkb::memset(death_count, 0, sizeof(death_count));
 
-            patch::write_nop(reinterpret_cast<void*>(0x808fa4f4));
+            patch::write_nop(relutil::relocate_addr(0x808fa4f4));
 
-            patch::write_branch_bl(reinterpret_cast<void*>(0x808fa560), reinterpret_cast<void*>(update_death_count));
+            patch::write_branch_bl(relutil::relocate_addr(0x808fa560), reinterpret_cast<void*>(update_death_count));
             patch::write_branch(reinterpret_cast<void*>(mkb::sprite_monkey_counter_tick), reinterpret_cast<void*>(death_counter_sprite_tick));
 
         }
@@ -385,7 +386,7 @@ namespace relpatches
     // This ensures the tutorial sequence will never start.
     void disable_tutorial::init_main_loop()
     {
-        patch::write_nop(reinterpret_cast<void*>(0x8027bbb0));
+        patch::write_nop(relutil::relocate_addr(0x8027bbb0));
     }
 
     // Disables the check that prevents stage objects from being reflected,
@@ -394,30 +395,30 @@ namespace relpatches
     // 0x38000000 = li r0, 0
     void fix_stobj_reflection::init_main_loop()
     {
-        patch::write_word(reinterpret_cast<void*>(0x802ca480), PPC_INSTR_LI(PPC_R0, 0x0));
-        patch::write_branch_bl(reinterpret_cast<void*>(0x802c9434), reinterpret_cast<void*>(main::reflection_draw_stage_hook));
+        patch::write_word(relutil::relocate_addr(0x802ca480), PPC_INSTR_LI(PPC_R0, 0x0));
+        patch::write_branch_bl(relutil::relocate_addr(0x802c9434), reinterpret_cast<void*>(main::reflection_draw_stage_hook));
     }
 
     // Checks the stage object's model flag to determine if the proper flag is set
     // during the 'view stage' sequence.
     void fix_stobj_reflection::init_main_game()
     {
-        patch::write_branch_bl(reinterpret_cast<void*>(0x80913F34), reinterpret_cast<void*>(main::reflection_view_stage_hook));
+        patch::write_branch_bl(relutil::relocate_addr(0x80913F34), reinterpret_cast<void*>(main::reflection_view_stage_hook));
     }
 
     // Hooks into g_handle_world_bgm, modifies the variable for BGM ID to point to
     // the one in our stage ID ->
     void music_id_per_stage::init_main_loop()
     {
-        patch::write_branch_bl(reinterpret_cast<void*>(0x802a5f08), reinterpret_cast<void*>(main::get_bgm_id_hook));
+        patch::write_branch_bl(relutil::relocate_addr(0x802a5f08), reinterpret_cast<void*>(main::get_bgm_id_hook));
     }
 
     // Hooks into two functions that set the global world_theme variable
     // Not entirely sure what the second one is for, but it may be used for SMB1 themes
     void theme_id_per_stage::init_main_loop()
     {
-        patch::write_branch(reinterpret_cast<void*>(0x802c7c3c), reinterpret_cast<void*>(main::get_theme_id_hook_1));
-        patch::write_branch(reinterpret_cast<void*>(0x802c7cc8), reinterpret_cast<void*>(main::get_theme_id_hook_2));
+        patch::write_branch(relutil::relocate_addr(0x802c7c3c), reinterpret_cast<void*>(main::get_theme_id_hook_1));
+        patch::write_branch(relutil::relocate_addr(0x802c7cc8), reinterpret_cast<void*>(main::get_theme_id_hook_2));
     }
 
     namespace extend_reflections {
@@ -428,8 +429,8 @@ namespace relpatches
         // Hooks into the reflection-handling function, calling our function instead
         void init_main_loop()
         {
-            patch::write_branch_bl(reinterpret_cast<void*>(0x8034b270), reinterpret_cast<void*>(mirror_tick));
-            patch::write_nop(reinterpret_cast<void*>(0x8034b11c));
+            patch::write_branch_bl(relutil::relocate_addr(0x8034b270), reinterpret_cast<void*>(mirror_tick));
+            patch::write_nop(relutil::relocate_addr(0x8034b11c));
             nearest_dist_to_mir = -1.0;
             distance_to_mirror = 0.0;
             active_ig = nullptr;
@@ -503,7 +504,7 @@ namespace relpatches
         // preloaded in place of AiAi
         void init_main_loop()
         {
-            patch::write_branch_bl(reinterpret_cast<void*>(0x803daffc), reinterpret_cast<void*>(main::get_monkey_id_hook));
+            patch::write_branch_bl(relutil::relocate_addr(0x803daffc), reinterpret_cast<void*>(main::get_monkey_id_hook));
         }
 
         // Sets the storymode filename to the name of the selected monkey, when no name is provided.
@@ -521,15 +522,15 @@ namespace relpatches
         // monkey, rather than deafulting to 'AIAI'.
         void init_main_game()
         {
-            patch::write_branch_bl(reinterpret_cast<void*>(0x808fcac4), reinterpret_cast<void*>(main::get_monkey_id_hook));
-            patch::write_branch_bl(reinterpret_cast<void*>(0x808ff120), reinterpret_cast<void*>(main::get_monkey_id_hook));
-            patch::write_branch_bl(reinterpret_cast<void*>(0x80908894), reinterpret_cast<void*>(main::get_monkey_id_hook));
+            patch::write_branch_bl(relutil::relocate_addr(0x808fcac4), reinterpret_cast<void*>(main::get_monkey_id_hook));
+            patch::write_branch_bl(relutil::relocate_addr(0x08ff120), reinterpret_cast<void*>(main::get_monkey_id_hook));
+            patch::write_branch_bl(relutil::relocate_addr(0x80908894), reinterpret_cast<void*>(main::get_monkey_id_hook));
 
-            patch::write_branch_bl(reinterpret_cast<void*>(0x80906368), reinterpret_cast<void*>(set_nameentry_filename));
-            patch::write_nop(reinterpret_cast<void*>(0x8090636c));
-            patch::write_nop(reinterpret_cast<void*>(0x80906370));
-            patch::write_nop(reinterpret_cast<void*>(0x80906374));
-            patch::write_nop(reinterpret_cast<void*>(0x80906378));
+            patch::write_branch_bl(relutil::relocate_addr(0x80906368), reinterpret_cast<void*>(set_nameentry_filename));
+            patch::write_nop(relutil::relocate_addr(0x8090636c));
+            patch::write_nop(relutil::relocate_addr(0x80906370));
+            patch::write_nop(relutil::relocate_addr(0x80906374));
+            patch::write_nop(relutil::relocate_addr(0x80906378));
         }
 
         // Assign the correct 'next screen' variables to redirect Story Mode to the
@@ -538,8 +539,8 @@ namespace relpatches
         void tick()
         {
             if (mkb::sub_mode == mkb::SMD_SEL_NGC_MAIN) {
-                patch::write_word(reinterpret_cast<void*>(0x80921a20), 0x6000000);
-                patch::write_word(reinterpret_cast<void*>(0x80920ba0), 0xC000000);
+                patch::write_word(relutil::relocate_addr(0x80921a20), 0x6000000);
+                patch::write_word(relutil::relocate_addr(0x80920ba0), 0xC000000);
                 if (mkb::g_currently_visible_menu_screen == 0x6) {
                     if (pad::button_pressed(mkb::PAD_BUTTON_A)) {
                         mkb::menu_stack_ptr = 1;
@@ -578,14 +579,14 @@ namespace relpatches
             if (mkb::main_mode == mkb::MD_GAME && (mkb::sub_mode == mkb::SMD_GAME_PLAY_MAIN || mkb::sub_mode == mkb::SMD_GAME_READY_MAIN)) {
                 if (smb1_cam_toggled) {
                     if (mkb::cameras[0].mode == 0x4c) mkb::cameras[0].mode = 1;
-                    patch::write_word(reinterpret_cast<void*>(0x802886c8), PPC_INSTR_LI(PPC_R0, 0x400));
+                    patch::write_word(relutil::relocate_addr(0x802886c8), PPC_INSTR_LI(PPC_R0, 0x400));
                     mkb::g_camera_turn_rate_scale = 0.6875;
                     mkb::camera_pivot_height = -0.5;
                     mkb::camera_height = 1;
                 }
                 else {
                     if (mkb::cameras[0].mode == 0x1) mkb::cameras[0].mode = 0x4c;
-                    patch::write_word(reinterpret_cast<void*>(0x802886c8), PPC_INSTR_LI(PPC_R0, 0x200));
+                    patch::write_word(relutil::relocate_addr(0x802886c8), PPC_INSTR_LI(PPC_R0, 0x200));
                     mkb::g_camera_turn_rate_scale = 0.75;
                     mkb::camera_pivot_height = 0.18;
                     mkb::camera_height = 0.8;
@@ -651,7 +652,7 @@ namespace relpatches
             // If we're in 'world 11', initialize the credits sequence.
             if (active_state == WORLD_COUNT) {
                 mkb::mode_flags = mkb::mode_flags | 0x100000;
-                patch::write_word(reinterpret_cast<void*>(0x8054dbdc), 0xffffffff);
+                patch::write_word(relutil::relocate_addr(0x8054dbdc), 0xffffffff);
                 mkb::g_storymode_mode = mkb::DMD_SCEN_GAME_CLEAR_INIT;
             }
 
@@ -668,14 +669,14 @@ namespace relpatches
                 mkb::OSSetCurrentHeap(mkb::chara_heap);
 
                 mkb::mode_flags = mkb::mode_flags | 0x100000;
-                patch::write_word(reinterpret_cast<void*>(0x8054dbdc), 0xffffffff);
+                patch::write_word(relutil::relocate_addr(0x8054dbdc), 0xffffffff);
                 mkb::g_storymode_mode = mkb::DMD_SCEN_NAMEENTRY_INIT;
             }
 
             // If we're in 'world 13', initialize the game over sequence.
             else if (active_state == WORLD_COUNT+2) {
                 mkb::mode_flags = mkb::mode_flags | 0x100000;
-                patch::write_word(reinterpret_cast<void*>(0x8054dbdc), 0xffffffff);
+                patch::write_word(relutil::relocate_addr(0x8054dbdc), 0xffffffff);
                 mkb::g_storymode_mode = mkb::DMD_SCEN_GAME_OVER_INIT;
             }
 
@@ -696,8 +697,8 @@ namespace relpatches
             mkb::g_storymode_mode = mkb::DMD_SCEN_SEL_FLOOR_MAIN;
 
             // I have no idea what this does, it's something the game does in the original function
-            u32 data = *reinterpret_cast<u32*>(0x8054dbc0);
-            patch::write_word(reinterpret_cast<void*>(0x8054dbc0), data|2);
+            u32 data = *reinterpret_cast<u32*>(relutil::relocate_addr(0x8054dbc0));
+            patch::write_word(relutil::relocate_addr(0x8054dbc0), data|2);
             mkb::dmd_scen_sel_floor_init_child();
         }
 
@@ -705,11 +706,11 @@ namespace relpatches
         void handle_preloading() {
             if (mkb::main_mode != mkb::MD_GAME || mkb::main_game_mode != mkb::STORY_MODE) {
                 // Preload files normally
-                patch::write_word(reinterpret_cast<void*>(0x803db048), 0x9421ffd0);
+                patch::write_word(relutil::relocate_addr(0x803db048), 0x9421ffd0);
             }
             else {
                 // Do not preload files
-                patch::write_blr(reinterpret_cast<void*>(0x803db048));
+                patch::write_blr(relutil::relocate_addr(0x803db048));
             }
         }
 
@@ -726,12 +727,12 @@ namespace relpatches
     namespace remove_playpoints {
         void init_main_game() {
             // Removes playpoint screen when exiting challenge/story mode.
-            patch::write_nop(reinterpret_cast<void*>(0x808f9ecc));
-            patch::write_nop(reinterpret_cast<void*>(0x808f9eec));
+            patch::write_nop(relutil::relocate_addr(0x808f9ecc));
+            patch::write_nop(relutil::relocate_addr(0x808f9eec));
 
             // Removes playpoint screen after the 'game over' sequence.
-            patch::write_nop(reinterpret_cast<void*>(0x808f801c));
-            patch::write_nop(reinterpret_cast<void*>(0x808f803c));
+            patch::write_nop(relutil::relocate_addr(0x808f801c));
+            patch::write_nop(relutil::relocate_addr(0x808f803c));
         }
 
         void tick() {
@@ -827,7 +828,7 @@ namespace relpatches
 
         void sel_ngc_init() {
             patch::hook_function(mkb::g_check_if_partygame_unlocked, determine_party_game_unlock_status);
-            patch::write_word(reinterpret_cast<void*>(0x808f9154), PPC_INSTR_LI(PPC_R0, (~party_game_bitflag & 0x3f)));
+            patch::write_word(relutil::relocate_addr(0x808f9154), PPC_INSTR_LI(PPC_R0, (~party_game_bitflag & 0x3f)));
 
             mkb::strcpy(mkb::CANNOT_SELECT_PARTY_GAME_STRING, "You cannot play this game\n in this custom pack.");
             mkb::strcpy(mkb::CAN_PURCHASE_PARTY_GAME_STRING, "You cannot unlock this game\n in this custom pack.");
@@ -893,9 +894,9 @@ namespace relpatches
             // Update the practice mode story mode display counter to show the proper number of worlds
 
             // Visually update the indicator
-            patch::write_word(reinterpret_cast<void*>(0x8090dbd0), (0x2c1a0000 | patches[Patches::CUSTOM_WORLD_COUNT].status));
+            patch::write_word(relutil::relocate_addr(0x8090dbd0), (0x2c1a0000 | patches[Patches::CUSTOM_WORLD_COUNT].status));
             // Update the indicator logic
-            patch::write_word(reinterpret_cast<void*>(0x80900f08), PPC_INSTR_LI(PPC_R29, patches[Patches::CUSTOM_WORLD_COUNT].status));
+            patch::write_word(relutil::relocate_addr(0x80900f08), PPC_INSTR_LI(PPC_R29, patches[Patches::CUSTOM_WORLD_COUNT].status));
         }
 
         void dmd_scen_sceneplay_init_patch() {

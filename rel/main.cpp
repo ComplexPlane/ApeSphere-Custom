@@ -5,6 +5,7 @@
 #include "config.h"
 #include "version.h"
 #include "modlink.h"
+#include "relutil.h"
 #include <mkb.h>
 
 #define STREQ(x,y) (mkb::strcmp(const_cast<char*>(x),const_cast<char*>(y))==0)
@@ -21,16 +22,16 @@ bool debug_mode_enabled = false;
 static void perform_assembly_patches()
 {
     // Inject the run function at the start of the main game loop
-    patch::write_branch_bl(reinterpret_cast<void*>(0x80270700),
+    patch::write_branch_bl(relutil::relocate_addr(0x80270700),
                            reinterpret_cast<void*>(start_main_loop_assembly));
 
     /* Remove OSReport call ``PERF : event is still open for CPU!``
     since it reports every frame, and thus clutters the console */
     // Only needs to be applied to the US version
-    patch::write_nop(reinterpret_cast<void *>(0x80033E9C));
+    patch::write_nop(relutil::relocate_addr(0x80033E9C));
 
     // Nop the conditional that guards `draw_debugtext`, enabling it even when debug mode is disabled
-    patch::write_nop(reinterpret_cast<void *>(0x80299f54));
+    patch::write_nop(relutil::relocate_addr(0x80299f54));
 }
 
 void init()
