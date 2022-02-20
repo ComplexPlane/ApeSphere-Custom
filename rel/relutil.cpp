@@ -88,12 +88,6 @@ void* relocate_addr(u32 vanilla_addr) {
 
                 u32 relocated_addr = live_addr + (vanilla_addr - region_addr);
 
-                // TODO remove
-                if (relocated_addr != vanilla_addr) {
-                    mkb::OSReport("Vanilla addr: 0x%08X, relocated addr: 0x%08X, live section addr: 0x%08X, bss: %d\n", vanilla_addr, relocated_addr, live_addr, region.is_bss);
-                    MOD_ASSERT(relocated_addr == vanilla_addr);
-                }
-
                 return reinterpret_cast<void*>(relocated_addr);
             }
         }

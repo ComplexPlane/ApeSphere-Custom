@@ -1,4 +1,5 @@
 #include "relpatches.h"
+#include "mergeheaps.h"
 #include "patch.h"
 #include <mkb.h>
 #include "assembly.h"
@@ -204,6 +205,12 @@ namespace relpatches
             .name = "stobj-draw-fix",
             .message = "[wsmod] Stobj draw fix patch %s\n",
             .main_loop_init_func = stobj_draw_fix::init_main_loop,
+        },
+
+        {
+            .name = "memoryopt-merge-heaps",
+            .message = "[wsmod] Memory optimize: merge heaps patch %s\n",
+            .main_loop_init_func = mergeheaps::init_main_loop,
         }
     };
 
