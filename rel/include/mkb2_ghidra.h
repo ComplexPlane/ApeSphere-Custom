@@ -3522,6 +3522,13 @@ struct GmaTextureDescriptor {
     undefined field_0x10[0x10];
 } __attribute__((__packed__));
 
+typedef struct OSSectionInfo OSSectionInfo, *POSSectionInfo;
+
+struct OSSectionInfo {
+    u32 offset; /* Bit 31 is whether the section is executable */
+    u32 size;
+} __attribute__((__packed__));
+
 typedef struct OSThreadLink OSThreadLink, *POSThreadLink;
 
 typedef struct OSThread OSThread, *POSThread;
@@ -3911,6 +3918,15 @@ enum {
 };
 typedef undefined4 GXTevScale;
 
+typedef struct OSRel OSRel, *POSRel;
+
+struct OSRel {
+    u16 offset;
+    u8 type;
+    u8 section;
+    u32 addend;
+} __attribute__((__packed__));
+
 enum {
     GX_CLAMP_NONE=0,
     GX_CLAMP_TOP=1,
@@ -4166,6 +4182,25 @@ enum {
     GX_PF_YUV420=7
 };
 typedef undefined4 GXPixelFmt;
+
+typedef struct OSModuleHeader OSModuleHeader, *POSModuleHeader;
+
+struct OSModuleHeader {
+    struct OSModuleInfo info;
+    u32 bssSize;
+    u32 relOffset;
+    u32 impOffset;
+    u32 impSize;
+    u8 prologSection;
+    u8 epilogSection;
+    u8 unresolvedSection;
+    u8 padding0;
+    u32 prolog;
+    u32 epilog;
+    u32 unresolved;
+    u32 align; /* REL versions >=2 only */
+    u32 bssAlign; /* REL versions >=2 only */
+} __attribute__((__packed__));
 
 enum {
     GX_TL_IA8=0,
@@ -4450,6 +4485,13 @@ struct GXRenderModeObj {
     u8 aa;
     u8 sample_pattern[12][2];
     u8 vfilter[7];
+} __attribute__((__packed__));
+
+typedef struct OSImportInfo OSImportInfo, *POSImportInfo;
+
+struct OSImportInfo {
+    OSModuleID id;
+    u32 offset;
 } __attribute__((__packed__));
 
 enum {
@@ -4859,7 +4901,7 @@ extern "C" {
     extern undefined4 rand_next_value;
     extern bool g_something_with_progressive_mode;
     extern u32 init_rel_index;
-    extern struct RelBufferInfo main_loop_buffer_info;
+    extern struct RelBufferInfo mainloop_rel_buffer_info;
     extern Locale  locale;
     extern struct GmaBuffer * init_common_gma;
     extern struct TplBuffer * init_common_tpl;
@@ -4992,7 +5034,7 @@ extern "C" {
     extern void (* sub_mode_funcs[265])(void);
     extern undefined * MAIN_MODE_NAMES[8];
     extern undefined * SUB_MODE_NAMES[265];
-    extern struct RelBufferInfo g_additional_rel_buffer_info;
+    extern struct RelBufferInfo additional_rel_buffer_info;
     extern undefined * DEBUG_MENU_OPTION_NAMES[7];
     extern undefined * switchdataD_80370704;
     extern undefined * switchdataD_80370758;
@@ -5937,8 +5979,8 @@ extern "C" {
     void empty_function(void);
     void empty_function(void);
     void OSSetStringTable(void * stringTable);
-    undefined4 Relocate(int * param_1, int param_2);
-    bool OSLink(struct OSModuleInfo * newModule, void * bss);
+    undefined4 Relocate(struct OSModuleHeader * module1, struct OSModuleHeader * module2);
+    bool OSLink(struct OSModuleHeader * newModule, void * bss);
     undefined4 Undo(int * param_1, int param_2);
     bool OSUnlink(struct OSModuleInfo * oldModule);
     void __OSModuleInit(void);

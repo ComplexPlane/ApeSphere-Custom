@@ -3179,7 +3179,7 @@
 80198AB8:rand_next_value
 80198B20:g_something_with_progressive_mode
 80198B24:init_rel_index
-80198B28:main_loop_buffer_info
+80198B28:mainloop_rel_buffer_info
 80198B30:locale
 80198B40:init_common_gma
 80198B44:init_common_tpl
@@ -4277,6 +4277,7 @@
 1,1,0003E80C:g_debug_text_put2
 1,1,0003E834:g_some_printf_function_2
 1,1,0003E8E8:draw_debugtext_char_en
+1,1,0003EAD0:full_debug_text_color_branchback
 1,1,0003EBE4:draw_debugtext_char_jp
 1,1,0003F414:draw_debugtext_window_bg
 1,1,0003F5C4:g_is_sjis_and_more_than_24_mib
@@ -8065,7 +8066,7 @@
 1,5,000007E4:sub_mode_funcs
 1,5,00000C58:MAIN_MODE_NAMES
 1,5,0000232C:SUB_MODE_NAMES
-1,5,00002754:g_additional_rel_buffer_info
+1,5,00002754:additional_rel_buffer_info
 1,5,000027B0:DEBUG_MENU_OPTION_NAMES
 1,5,000027EC:switchdataD_80370704
 1,5,00002840:switchdataD_80370758
