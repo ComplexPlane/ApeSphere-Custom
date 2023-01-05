@@ -5,6 +5,7 @@
 #include "ppcutil.h"
 #include "pad.h"
 #include <cstdio>
+#include "mergeheaps.h"
 
 namespace relpatches
 {
@@ -103,7 +104,8 @@ namespace relpatches
         {
             .name = "no-music-vol-decrease-on-pause",
             .message = "[wsmod]  No music volume decrease on pause %s\n",
-            .main_loop_init_func = no_music_vol_decrease_on_pause::init_main_loop,
+            .main_loop_init_func =
+                no_music_vol_decrease_on_pause::init_main_loop,
         },
 
         {
@@ -203,7 +205,13 @@ namespace relpatches
             .name = "stobj-draw-fix",
             .message = "[wsmod] Stobj draw fix patch %s\n",
             .main_loop_init_func = stobj_draw_fix::init_main_loop,
-        }
+        },
+
+        {
+            .name = "memoryopt-merge-heaps",
+            .message = "[wsmod] Merge heaps patch %s\n",
+            .main_loop_init_func = mergeheaps::init_main_loop,
+        },
     };
 
     const unsigned int PATCH_COUNT = sizeof(patches) / sizeof(patches[0]);
