@@ -2,25 +2,13 @@
 
 #include <mkb.h>
 
-// These seem terribly hacky, maybe a better replacement could be made in the future
-// Maybe we could even show a custom crash screen!
+namespace log {
 
-#define MOD_ASSERT(exp) \
-({ \
-    if (!(exp)) \
-    { \
-        mkb::OSPanic(__FILE__, __LINE__, "Failed assertion " #exp); \
-        mkb::OSReport("[wsmod] Failed assertion in %s line %d: %s\n", __FILE__, __LINE__, #exp); \
-        while (true); \
-    } \
-})
+void mod_assert(const char* file, s32 line, bool exp);
 
-#define MOD_ASSERT_MSG(exp, msg) \
-({ \
-    if (!(exp)) \
-    { \
-        mkb::OSPanic(__FILE__, __LINE__, msg); \
-        mkb::OSReport("[wsmod] Failed assertion in %s line %d: %s\n", __FILE__, __LINE__, (msg)); \
-        while (true); \
-    } \
-})
+[[noreturn]] void abort();
+[[noreturn]] void abort(const char* format, ...);
+
+}  // namespace log
+
+#define MOD_ASSERT(exp) (log::mod_assert(__FILE__, __LINE__, (exp)))

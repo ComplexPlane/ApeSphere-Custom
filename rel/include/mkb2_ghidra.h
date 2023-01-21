@@ -4748,7 +4748,6 @@ extern "C" {
     extern undefined4 safe_thread_priority;
     extern undefined4 vsync_thread_priority;
     extern undefined4 mwidle_thread_priority;
-    extern undefined stdout;
     extern undefined * switchdataD_801444c0;
     extern char ASCII_LOWERCASE[256];
     extern char ASCII_UPPERCASE[256];
@@ -7150,7 +7149,7 @@ extern "C" {
     void __sinit_AILoader_cpp(void);
     int sprintf(char * buffer, char * format, ...);
     s32 vsprintf(char * out_str, char * format_str, va_list args);
-    int vprintf(char * format, char * param_2);
+    int vprintf(char * format, va_list args);
     int printf(char * format, ...);
     void * __StringWrite(struct __OutStrCtrl * osc, char * Buffer, size_t NumChars);
     FILE * __FileWrite(FILE * File, char * Buffer, size_t NumChars);

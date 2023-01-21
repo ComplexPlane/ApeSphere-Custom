@@ -46,7 +46,7 @@ void init()
     perform_assembly_patches();
 
     // Load our config file
-    config::parse_config();
+    config::parse();
 
     patch::hook_function(s_draw_debugtext_tramp, mkb::draw_debugtext, []()
         {

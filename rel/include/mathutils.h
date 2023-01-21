@@ -6,6 +6,8 @@
  * Vector macros which may have existed in the original source in some form.
  */
 
+#define LEN(array) (sizeof(array) / sizeof((array)[0]))
+
 #define VEC_ADD(v1, v2) (Vec3f{(v1).x + (v2).x, (v1).y + (v2).y, (v1).z + (v2).z})
 #define VEC_SUB(v1, v2) (Vec3f{(v1).x - (v2).x, (v1).y - (v2).y, (v1).z - (v2).z})
 #define VEC_SUB2D(v1, v2) (Vec3f{(v1).x - (v2).x, 0, (v1).z - (v2).z})
