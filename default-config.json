@@ -56,14 +56,6 @@
         // reflective objects to be animated.
         "enhance_reflective_surfaces": false,
 
-        // Draws music ID data from a per-stage list, defined below, instead of basing
-        // it on the active theme.
-        "custom_music_id": false,
-
-        // Draws theme ID data from a per-stage list, defined below, instead of using
-        // the built-in list.
-        "custom_theme_id": false,
-
         // Skips the AV logo and intro movie sequence on game start, immediately
         // skipping to the title screen.
         "skip_intro_movie": false,
