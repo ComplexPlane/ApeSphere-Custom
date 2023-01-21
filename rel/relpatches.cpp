@@ -773,7 +773,7 @@ namespace relpatches
 
     // Allows for party games to be toggled with a config option.
     namespace party_game_toggle {
-        u16 party_game_bitflag = 0;
+        static u16 s_party_game_bitflag = 0;
 
         // Variable-precision SWAR algorithm
         // Source: https://stackoverflow.com/a/109025
@@ -789,17 +789,17 @@ namespace relpatches
         u32 determine_party_game_unlock_status(int id) {
             switch (id) {
                 case 0xa:
-                    return (party_game_bitflag & 0x40);
+                    return (s_party_game_bitflag & 0x40);
                 case 0x9:
-                    return (party_game_bitflag & 0x80);
+                    return (s_party_game_bitflag & 0x80);
                 case 0xd:
-                    return (party_game_bitflag & 0x100);
+                    return (s_party_game_bitflag & 0x100);
                 case 0xc:
-                    return (party_game_bitflag & 0x200);
+                    return (s_party_game_bitflag & 0x200);
                 case 0xf:
-                    return (party_game_bitflag & 0x400);
+                    return (s_party_game_bitflag & 0x400);
                 case 0x10:
-                    return (party_game_bitflag & 0x800);
+                    return (s_party_game_bitflag & 0x800);
                 default:
                     return 0;
             }
@@ -808,11 +808,11 @@ namespace relpatches
 
         void sel_ngc_init() {
             patch::hook_function(mkb::g_check_if_partygame_unlocked, determine_party_game_unlock_status);
-            patch::write_word(reinterpret_cast<void*>(0x808f9154), PPC_INSTR_LI(PPC_R0, (~party_game_bitflag & 0x3f)));
+            patch::write_word(reinterpret_cast<void*>(0x808f9154), PPC_INSTR_LI(PPC_R0, (~s_party_game_bitflag & 0x3f)));
 
             mkb::strcpy(mkb::CANNOT_SELECT_PARTY_GAME_STRING, "You cannot play this game\n in this custom pack.");
             mkb::strcpy(mkb::CAN_PURCHASE_PARTY_GAME_STRING, "You cannot unlock this game\n in this custom pack.");
-            mkb::sprintf(mkb::CAN_PLAY_NUM_PARTY_GAMES_STRING, "You can play /bcff8000/%d/bcffff00/ party games!", number_of_unlocked_party_games(party_game_bitflag));
+            mkb::sprintf(mkb::CAN_PLAY_NUM_PARTY_GAMES_STRING, "You can play /bcff8000/%d/bcffff00/ party games!", number_of_unlocked_party_games(s_party_game_bitflag));
         }
     }
 

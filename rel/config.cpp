@@ -19,6 +19,7 @@ namespace config {
 //
 
 struct Allocator {
+    // TODO allocate on parse heap
     void* allocate(size_t size) { return heap::alloc(size); }
     void deallocate(void* ptr) { heap::free(ptr); }
 };
@@ -32,7 +33,7 @@ static void* read_file(const char* path) {
 
     // Round up to a multiple of 32, necessary for DVDReadAsyncPrio
     u32 rounded_up_size = mkb::OSRoundUp32B(s_dvd_file_info.length);
-    void* file_buf = heap::alloc(rounded_up_size);
+    void* file_buf = heap::alloc(rounded_up_size); // TODO use parse heap
     u32 read_size = mkb::read_entire_file_using_dvdread_prio_async(&s_dvd_file_info, file_buf,
                                                                    rounded_up_size, 0);
     MOD_ASSERT(read_size > 0);
@@ -161,45 +162,11 @@ static JsonArray parse_array_field(JsonObject parent, const char* field_name) {
 // Validate and parse stuff from loaded json config
 //
 
-struct StageInfo {
-    u16 stage_id;
-    char name[32];
-    u16 theme_id;
-    u16 music_id;
-    u32 time_limit_frames;
-};
-
-template <typename T>
-struct FixedArray {
-    T* elems;
-    size_t size;
-};
-
-struct CmStage {
-    u16 stage_id;
-    u16 blue_goal_jump;
-    u16 green_goal_jump;
-    u16 red_goal_jump;
-};
-
-struct CmLayout {
-    FixedArray<CmStage> beginner;
-    FixedArray<CmStage> beginner_extra;
-    FixedArray<CmStage> advanced;
-    FixedArray<CmStage> advanced_extra;
-    FixedArray<CmStage> expert;
-    FixedArray<CmStage> expert_extra;
-    FixedArray<CmStage> master;
-    FixedArray<CmStage> master_extra;
-};
 
 static const char* party_game_names[] = {
     "race", "fight", "target",   "billiards", "bowling",  "golf",
     "boat", "shot",  "dogfight", "soccer",    "baseball", "tennis",
 };
-
-static u16 s_story_mode_layout[10][10];
-static CmLayout s_cm_layout;
 
 static void parse_stage_info(JsonObject stage_info, StageInfo& out_stage_info) {
     int stage_id = parse_int_field(stage_info, "stage_id");
@@ -219,12 +186,12 @@ static void parse_stage_info(JsonObject stage_info, StageInfo& out_stage_info) {
     out_stage_info.time_limit_frames = static_cast<u32>(time_limit * 60 + 0.5);
 }
 
-static FixedArray<CmStage> parse_cm_course(JsonObject layout_obj, const char *course_name) {
+static FixedArray<CmStageInfo> parse_cm_course(JsonObject layout_obj, const char *course_name) {
     JsonArray stage_list_j = parse_array_field(layout_obj, course_name);
     s_parse_stack.push(course_name);
 
-    FixedArray<CmStage> stage_list{
-        .elems = static_cast<CmStage*>(heap::alloc(sizeof(CmStage) * stage_list_j.size())),
+    FixedArray<CmStageInfo> stage_list{
+        .elems = static_cast<CmStageInfo*>(heap::alloc(sizeof(CmStageInfo) * stage_list_j.size())),
         .size = stage_list_j.size(),
     };
 
@@ -235,8 +202,8 @@ static FixedArray<CmStage> parse_cm_course(JsonObject layout_obj, const char *co
             s_parse_stack.abort_with_trace(" isn't an object\n");
         }
 
-        CmStage& out_stage = stage_list.elems[i];
-        out_stage.stage_id = parse_int_field(stage_j, "stage_id");
+        CmStageInfo& out_stage = stage_list.elems[i];
+        parse_stage_info(stage_j, out_stage);
         out_stage.blue_goal_jump = parse_int_field(stage_j, "blue_goal_jump");
         out_stage.green_goal_jump = parse_int_field(stage_j, "green_goal_jump");
         out_stage.red_goal_jump = parse_int_field(stage_j, "red_goal_jump");
@@ -249,15 +216,15 @@ static FixedArray<CmStage> parse_cm_course(JsonObject layout_obj, const char *co
     return stage_list;
 }
 
-static void parse_cm_layout(JsonObject layout_obj, CmLayout& out_layout) {
-    out_layout.beginner = parse_cm_course(layout_obj, "beginner");
-    out_layout.beginner_extra = parse_cm_course(layout_obj, "beginner_extra");
-    out_layout.advanced = parse_cm_course(layout_obj, "advanced");
-    out_layout.advanced_extra = parse_cm_course(layout_obj, "advanced_extra");
-    out_layout.expert = parse_cm_course(layout_obj, "expert");
-    out_layout.expert_extra = parse_cm_course(layout_obj, "expert_extra");
-    out_layout.master = parse_cm_course(layout_obj, "master");
-    out_layout.master_extra = parse_cm_course(layout_obj, "master_extra");
+static void parse_cm_layout(JsonObject layout_obj, Config &out_config) {
+    out_config.cm_layout.beginner = parse_cm_course(layout_obj, "beginner");
+    out_config.cm_layout.beginner_extra = parse_cm_course(layout_obj, "beginner_extra");
+    out_config.cm_layout.advanced = parse_cm_course(layout_obj, "advanced");
+    out_config.cm_layout.advanced_extra = parse_cm_course(layout_obj, "advanced_extra");
+    out_config.cm_layout.expert = parse_cm_course(layout_obj, "expert");
+    out_config.cm_layout.expert_extra = parse_cm_course(layout_obj, "expert_extra");
+    out_config.cm_layout.master = parse_cm_course(layout_obj, "master");
+    out_config.cm_layout.master_extra = parse_cm_course(layout_obj, "master_extra");
 }
 
 static void parse_patches(JsonObject root_obj) {
@@ -285,28 +252,34 @@ static void parse_patches(JsonObject root_obj) {
     s_parse_stack.pop();
 }
 
-static void parse_story_layout(JsonObject root_obj) {
+static void parse_story_layout(JsonObject root_obj, Config &out_config) {
     JsonArray worlds_j = parse_array_field(root_obj, "story_mode_layout");
     s_parse_stack.push("story_mode_layout");
+
+    // Allocate worlds array
+    if (worlds_j.size() < 1 || worlds_j.size() > 10) {
+        s_parse_stack.abort_with_trace(" has invalid world count\n");
+    }
 
     size_t world_idx = 0;
     for (JsonArray world_j : worlds_j) {
         s_parse_stack.push(world_idx);
         if (world_j.isNull()) {
-            s_parse_stack.abort_with_trace(" isn't an object\n");
+            s_parse_stack.abort_with_trace(" isn't an array\n");
         }
         if (world_j.size() != 10) {
-            s_parse_stack.abort_with_trace(" has incorrect stage count\n");
+            s_parse_stack.abort_with_trace(" has invalid stage count\n");
         }
 
         size_t stage_idx = 0;
-        for (JsonVariant stage_id_j : world_j) {
+        for (JsonObject stage_j : world_j) {
             s_parse_stack.push(stage_idx);
-            if (!stage_id_j.is<int>()) {
-                s_parse_stack.abort_with_trace(" is not an integer stage ID\n");
+            if (stage_j.isNull()) {
+                s_parse_stack.abort_with_trace(" isn't an object\n");
             }
 
-            s_story_mode_layout[world_idx][stage_idx] = stage_id_j;
+            StageInfo &stage_info = out_config.story_layout.elems[world_idx][stage_idx];
+            parse_stage_info(stage_j, stage_info);
 
             stage_idx++;
             s_parse_stack.pop();
@@ -319,38 +292,23 @@ static void parse_story_layout(JsonObject root_obj) {
     s_parse_stack.pop();
 }
 
-static void parse_party_game_toggles(JsonObject root_obj) {
+static void parse_party_game_toggles(JsonObject root_obj, Config &out_config) {
+    // Ignore party game toggles if the patch is disabled
+
     JsonObject party_games_obj = parse_object_field(root_obj, "party_game_toggles");
     s_parse_stack.push("party_game_toggles");
 
-    relpatches::party_game_toggle::party_game_bitflag = 0;
     for (u32 i = 0; i < LEN(party_game_names); i++) {
         bool enabled = parse_bool_field(party_games_obj, party_game_names[i]);
         if (enabled) {
-            relpatches::party_game_toggle::party_game_bitflag |= (1 << i);
+            out_config.party_game_bitfield |= (1 << i);
         }
     }
 
     s_parse_stack.pop();
 }
 
-static void parse_stage_info(JsonObject root_obj) {
-    JsonArray stage_info_arr = parse_array_field(root_obj, "stage_info");
-    s_parse_stack.push("stage_info");
-
-    StageInfo stage_info;
-    size_t stage_info_idx = 0;
-    for (JsonObject stage_info_obj : stage_info_arr) {
-        s_parse_stack.push(stage_info_idx);
-        parse_stage_info(stage_info_obj, stage_info);
-        s_parse_stack.pop();
-        stage_info_idx++;
-    }
-
-    s_parse_stack.pop();
-}
-
-void parse() {
+Config *parse() {
     // ArduinoJson uses less memory given a mutable input
     char* json_text = static_cast<char*>(read_file("config.json"));
     BasicJsonDocument<Allocator> doc(2048);
@@ -371,13 +329,27 @@ void parse() {
         log::abort("[wsmod] Error parsing config: root value is not an object\n");
     }
 
-    parse_patches(root_obj);
-    parse_party_game_toggles(root_obj);
-    parse_stage_info(root_obj);
-    parse_story_layout(root_obj);
-    parse_cm_layout(root_obj, s_cm_layout);
+    // TODO allocate on parse heap
+    Config *config = static_cast<Config*>(heap::alloc(sizeof(Config)));
 
-    heap::free(json_text);
+    // This directly enables/disables patches instead of storing in Config.
+    // Might be cleaner to parse to bitflag in Config or something
+    parse_patches(root_obj);
+    bool party_game_toggle = root_obj["patches"]["party_game_toggle"];
+    bool custom_stage_info = root_obj["patches"]["custom_stage_info"];
+
+    if (party_game_toggle) {
+        parse_party_game_toggles(root_obj, *config);
+    }
+
+    if (custom_stage_info) {
+        parse_story_layout(root_obj, *config);
+        parse_cm_layout(root_obj, *config);
+    }
+
+    // Config and JSON text will get freed alongside the entire parse heap
+
+    return config;
 }
 
 }  // namespace newconf

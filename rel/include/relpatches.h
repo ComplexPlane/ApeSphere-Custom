@@ -150,7 +150,6 @@ namespace party_game_toggle {
 u32 number_of_unlocked_party_games(u32 i);
 u32 determine_party_game_unlock_status(int id);
 void sel_ngc_init();
-extern u16 party_game_bitflag;
 }
 
 

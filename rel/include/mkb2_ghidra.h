@@ -2844,22 +2844,6 @@ struct _IO_FILE {
 
 typedef double f64;
 
-#define _M_IX86 500
-
-#define _USE_ATTRIBUTES_FOR_SAL 0
-
-#define _WIN32_WINNT 1024
-
-#define _USE_DECLSPECS_FOR_SAL 0
-
-#define _WIN32_WINDOWS 1024
-
-#define WINVER 1536
-
-#define _MSC_VER 9090
-
-#define _INTEGRAL_MAX_BITS 32
-
 typedef struct _IO_FILE __FILE;
 
 typedef struct _IO_FILE FILE;
