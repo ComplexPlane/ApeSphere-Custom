@@ -9,6 +9,7 @@
 namespace relpatches
 {
     enum Patches : int {
+        CUSTOM_STAGE_INFO,
         CHALLENGE_MODE_DEATH_COUNT,
         DISABLE_HOW_TO_PLAY_SCREEN,
         ENHANCE_REFLECTIVE_SURFACES,
@@ -17,7 +18,6 @@ namespace relpatches
         FIX_REVOLUTION_SLOT,
         FIX_STAGE_OBJECT_REFLECTION,
         FIX_WORMHOLE_SURFACES,
-        CUSTOM_MUSIC_ID,
         NO_HURRY_UP_MUSIC,
         NO_MUSIC_VOL_DECREASE_ON_PAUSE,
         PERFECT_BONUS_COMPLETION,
@@ -26,119 +26,115 @@ namespace relpatches
         SMB1_CAMERA_TOGGLE,
         STORY_MODE_MUSIC_FIX,
         STORY_MODE_CHAR_SELECT,
-        CUSTOM_THEME_ID,
         SKIP_CUTSCENES,
         REMOVE_PLAYPOINTS,
         FIX_STORM_CONTINUE_PLATFORM,
         FIX_ANY_PERCENT_CRASH,
         PARTY_GAME_TOGGLE,
         ENABLE_MENU_REFLECTIONS,
-        CUSTOM_WORLD_COUNT,
         GOAL_DRAW_FIX,
     };
 
     Tickable patches[] = {
         {
-            .name = "challenge-mode-death-count",
+            .name = "custom_stage_info",
+            .message = "[wsmod]  Custom stage info %s\n",
+        },
+        {
+            .name = "challenge_mode_death_count",
             .message = "[wsmod]  Challenge mode death count %s\n",
             .main_game_init_func = challenge_death_count::init_main_game,
         },
 
         {
-            .name = "disable-how-to-play-screen",
+            .name = "disable_how_to_play_screen",
             .message = "[wsmod]  Tutorial sequence removal %s\n",
             .main_loop_init_func = disable_tutorial::init_main_loop,
         },
 
         {
-            .name = "enhance-reflective-surfaces",
+            .name = "enhance_reflective_surfaces",
             .message = "[wsmod]  Reflective surface enhancements %s\n",
             .main_loop_init_func = extend_reflections::init_main_loop,
         },
 
         {
-            .name = "fix-labyrinth-camera",
+            .name = "fix_labyrinth_camera",
             .message = "[wsmod]  Labyrinth stage slot fix %s\n",
             .main_loop_init_func = fix_labyrinth_camera::init_main_loop,
         },
 
         {
-            .name = "fix-missing-w",
+            .name = "fix_missing_w",
             .message = "[wsmod]  Missing 'w'  patch %s\n",
             .main_game_init_func = fix_missing_w::init_main_game,
         },
 
         {
-            .name = "fix-revolution-slot",
+            .name = "fix_revolution_slot",
             .message = "[wsmod]  Revolution stage slot fix %s\n",
             .main_loop_init_func = fix_revolution_slot::init_main_loop,
         },
 
         {
-            .name = "fix-stage-object-reflection",
+            .name = "fix_stage_object_reflection",
             .message = "[wsmod]  Stobj reflection flag support %s\n",
             .main_loop_init_func = fix_stobj_reflection::init_main_loop,
             .main_game_init_func = fix_stobj_reflection::init_main_game,
         },
 
         {
-            .name = "fix-wormhole-surfaces",
+            .name = "fix_wormhole_surfaces",
             .message = "[wsmod]  Party game stage slot fix %s\n",
             .main_loop_init_func = fix_wormhole_surfaces::init_main_loop,
         },
 
         {
-            .name = "custom-music-id",
-            .message = "[wsmod]  Custom music ID patch %s\n",
-            .main_loop_init_func = music_id_per_stage::init_main_loop,
-        },
-
-        {
-            .name = "no-hurry-up-music",
+            .name = "no_hurry_up_music",
             .message = "[wsmod]  Hurry up music removal %s\n",
             .main_game_init_func = no_hurry_up_music::init_main_game,
             .tick_func = no_hurry_up_music::tick,
         },
 
         {
-            .name = "no-music-vol-decrease-on-pause",
+            .name = "no_music_vol_decrease_on_pause",
             .message = "[wsmod]  No music volume decrease on pause %s\n",
             .main_loop_init_func = no_music_vol_decrease_on_pause::init_main_loop,
         },
 
         {
-            .name = "perfect-bonus-completion",
+            .name = "perfect_bonus_completion",
             .message = "[wsmod]  Perfect bonus completion %s\n",
             .main_loop_init_func = perfect_bonus::init,
         },
 
         {
-            .name = "remove-desert-haze",
+            .name = "remove_desert_haze",
             .message = "[wsmod]  Desert haze removal %s\n",
             .main_loop_init_func = remove_desert_haze::init_main_loop,
         },
 
         {
-            .name = "skip-intro-movie",
+            .name = "skip_intro_movie",
             .message = "[wsmod]  Skip intro movie patch %s\n",
             .main_loop_init_func = skip_intro_movie::init_main_loop,
         },
 
         {
-            .name = "smb1-camera-toggle",
+            .name = "smb1_camera_toggle",
             .message = "[wsmod]  SMB1 camera toggle %s\n",
             .main_loop_init_func = smb1_camera_toggle::init_main_loop,
             .tick_func = smb1_camera_toggle::tick,
         },
 
         {
-            .name = "story-mode-music-fix",
+            .name = "story_mode_music_fix",
             .message = "[wsmod]  Continuous story mode music %s\n",
             .main_loop_init_func = story_continuous_music::init_main_loop,
         },
 
         {
-            .name = "story-mode-char-select",
+            .name = "story_mode_char_select",
             .message = "[wsmod]  Story mode character select %s\n",
             .main_loop_init_func = story_mode_char_select::init_main_loop,
             .main_game_init_func = story_mode_char_select::init_main_game,
@@ -146,61 +142,45 @@ namespace relpatches
         },
 
         {
-            .name = "custom-theme-id",
-            .message = "[wsmod]  Custom theme ID patch %s\n",
-            .main_loop_init_func = theme_id_per_stage::init_main_loop,
-        },
-
-        {
-            .name = "skip-cutscenes",
+            .name = "skip_cutscenes",
             .message = "[wsmod]  Cutscene skip patch %s\n",
             .main_game_init_func = skip_cutscenes::init_main_game,
         },
 
         {
-            .name = "remove-playpoints",
+            .name = "remove_playpoints",
             .message = "[wsmod]  Playpoint removal patch %s\n",
             .main_game_init_func = remove_playpoints::init_main_game,
             .tick_func = remove_playpoints::tick,
         },
 
         {
-            .name = "fix-storm-continue-platform",
+            .name = "fix_storm_continue_platform",
             .message = "[wsmod]  Storm continue platform patch %s\n",
             .main_loop_init_func = fix_storm_continue_platform::init_main_loop,
         },
 
         {
-            .name = "fix-any-percent-crash",
+            .name = "fix_any_percent_crash",
             .message = "[wsmod]  Story mode any-percent crash fix %s\n",
             .main_loop_init_func = fix_any_percent_crash::init_main_loop,
             .tick_func = fix_any_percent_crash::tick,
         },
 
         {
-            .name = "party-game-toggle",
+            .name = "party_game_toggle",
             .message = "[wsmod]  Party game toggle patch %s\n",
             .sel_ngc_init_func = party_game_toggle::sel_ngc_init,
         },
 
         {
-            .name = "enable-menu-reflections",
+            .name = "enable_menu_reflections",
             .message = "[wsmod]  Menu reflection patch %s\n",
             .main_loop_init_func = enable_menu_reflections::init_main_loop,
         },
 
         {
-            .name = "custom-world-count",
-            .message = "[wsmod] Custom world count patch %s\n",
-            .default_value = 10,
-            .minimum_value = 1,
-            .maximum_value = 10,
-            .main_game_init_func = custom_world_count::init_main_game,
-            .sel_ngc_init_func = custom_world_count::init_sel_ngc,
-        },
-
-        {
-            .name = "stobj-draw-fix",
+            .name = "stobj_draw_fix",
             .message = "[wsmod] Stobj draw fix patch %s\n",
             .main_loop_init_func = stobj_draw_fix::init_main_loop,
         }
@@ -874,37 +854,37 @@ namespace relpatches
 
     // Allows for the number of worlds in story mode to be customized.
     namespace custom_world_count {
-        static patch::Tramp<decltype(&mkb::dmd_scen_sceneplay_init)> s_sceneplay_init_tramp;
+        // static patch::Tramp<decltype(&mkb::dmd_scen_sceneplay_init)> s_sceneplay_init_tramp;
 
-        void init_main_game() {
-            WORLD_COUNT = patches[Patches::CUSTOM_WORLD_COUNT].status;
+        // void init_main_game() {
+        //     WORLD_COUNT = patches[Patches::CUSTOM_WORLD_COUNT].status;
 
-            mkb::OSReport("set world count to %d\n", WORLD_COUNT);
+        //     mkb::OSReport("set world count to %d\n", WORLD_COUNT);
 
-            if (!patches[Patches::SKIP_CUTSCENES].status) {
-                mkb::OSReport("hooking sceneplay\n");
+        //     if (!patches[Patches::SKIP_CUTSCENES].status) {
+        //         mkb::OSReport("hooking sceneplay\n");
 
-                patch::hook_function(s_sceneplay_init_tramp,
-                                     mkb::dmd_scen_sceneplay_init, dmd_scen_sceneplay_init_patch);
-            }
+        //         patch::hook_function(s_sceneplay_init_tramp,
+        //                              mkb::dmd_scen_sceneplay_init, dmd_scen_sceneplay_init_patch);
+        //     }
 
-        }
+        // }
 
-        void init_sel_ngc() {
-            // Update the practice mode story mode display counter to show the proper number of worlds
+        // void init_sel_ngc() {
+        //     // Update the practice mode story mode display counter to show the proper number of worlds
 
-            // Visually update the indicator
-            patch::write_word(reinterpret_cast<void*>(0x8090dbd0), (0x2c1a0000 | patches[Patches::CUSTOM_WORLD_COUNT].status));
-            // Update the indicator logic
-            patch::write_word(reinterpret_cast<void*>(0x80900f08), PPC_INSTR_LI(PPC_R29, patches[Patches::CUSTOM_WORLD_COUNT].status));
-        }
+        //     // Visually update the indicator
+        //     patch::write_word(reinterpret_cast<void*>(0x8090dbd0), (0x2c1a0000 | patches[Patches::CUSTOM_WORLD_COUNT].status));
+        //     // Update the indicator logic
+        //     patch::write_word(reinterpret_cast<void*>(0x80900f08), PPC_INSTR_LI(PPC_R29, patches[Patches::CUSTOM_WORLD_COUNT].status));
+        // }
 
-        void dmd_scen_sceneplay_init_patch() {
-            if (mkb::g_storymode_next_world == WORLD_COUNT) {
-                mkb::g_storymode_next_world = 10;
-            }
-            s_sceneplay_init_tramp.dest();
-        }
+        // void dmd_scen_sceneplay_init_patch() {
+        //     if (mkb::g_storymode_next_world == WORLD_COUNT) {
+        //         mkb::g_storymode_next_world = 10;
+        //     }
+        //     s_sceneplay_init_tramp.dest();
+        // }
 
 
     }

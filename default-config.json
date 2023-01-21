@@ -1,0 +1,228 @@
+{
+    // Patches are enabled with "true" and disabled with "false"
+    "patches": {
+        // Enable specifying stage names, theme IDs, music IDs, time limits, story/challenge mode
+        // layouts etc. in the "story_mode_layout" and "challenge_mode_layout" sections. If you're
+        // making a custom level pack, you probably want to enable this.
+        "custom_stage_info": false,
+
+        // When the number of bananas remaining on a stage that is marked as a bonus
+        // stage hits zero, the stage is completed with a 'Perfect' pop-up and voice
+        // line, identical to SMB1.
+        "perfect_bonus_completion": false,
+
+        // Removes the heat haze on levels in theme ID 7 (sand).
+        // Indirectly fixes the widescreen issue with heat haze.
+        "remove_desert_haze": false,
+
+        // Prevents the world music from being interrupted by the stage select music
+        // in Story Mode.
+        "story_mode_music_fix": false,
+
+        // Prevents the music volume from being lowered when the game is paused.
+        "no_music_vol_decrease_on_pause": false,
+
+        // Allows the player to select between the four playable monkeys in Story Mode.
+        "story_mode_char_select": false,
+
+        // Stops the 'hurry up' music from playing.
+        "no_hurry_up_music": false,
+
+        // Removes hardcoded elements from Revolution's level slot.
+        "fix_revolution_slot": false,
+
+        // Fixes the lower-angle camera hardcoded to Labyrinth's level slot.
+        "fix_labyrinth_camera": false,
+
+        // Challenge mode has infinite lives, and the life counter is converted into
+        // a counter that tracks the number of deaths.
+        "challenge_mode_death_count": false,
+
+        // Disables the tutorial/ranking sequence that shows up when the player goes
+        // idle at the title screen.
+        "disable_how_to_play_screen": false,
+
+        // Fixes an issue where wormhole surfaces do not appear on stage IDs 130
+        // through 180, and stage ID 199.
+        "fix_wormhole_surfaces": false,
+
+        // Fixes an issue where goal posts would not reflect properly, and makes any
+        // stage object with the effect bitflag 0x4 reflect in a reflective stage object.
+        "fix_stage_object_reflection": false,
+
+        // Allows for arbitrarily many mirror planes on a stage, rendering the mirror plane
+        // from the origin of the reflective object nearest to the player. Also applies the
+        // item group/collision header transformation to the mirror plane, allowing for
+        // reflective objects to be animated.
+        "enhance_reflective_surfaces": false,
+
+        // Draws music ID data from a per-stage list, defined below, instead of basing
+        // it on the active theme.
+        "custom_music_id": false,
+
+        // Draws theme ID data from a per-stage list, defined below, instead of using
+        // the built-in list.
+        "custom_theme_id": false,
+
+        // Skips the AV logo and intro movie sequence on game start, immediately
+        // skipping to the title screen.
+        "skip_intro_movie": false,
+
+        // Allows for the SMB1 camera to be toggled with the Z button mid-game.
+        "smb1_camera_toggle": false,
+
+        // Replaces the misplaced 't' letter in the story mode data entry screen with
+        // the correct letter, a lowercase 'w'.
+        "fix_missing_w": false,
+
+        // Skips the cutscenes in story mode.
+        "skip_cutscenes": false,
+
+        // Removes the playpoint screen upon returning from story or challenge mode,
+        // and unlocks all party games.
+        "remove_playpoints": false,
+
+        // Fixes an issue with the storm theme where rain droplet splashes would not appear
+        // correctly on the continue platform.
+        "fix_storm_continue_platform": false,
+
+        // Fixes an issue where skipping more than two or three stages in story mode with the
+        // any% skip glitch would lead to the game crashing. Please note that this allows for
+        // up to 99 skips to be performed.
+        "fix_any_percent_crash": false,
+
+        // Permanently enables or disables party games based off the Party Game Toggles
+        // list.
+        "party_game_toggle": false,
+
+        // Allows for the stages that appear in the background of the menu, stages 3 and 201,
+        // to have mirrors in the background. This is experimental and may cause issues.
+        "enable_menu_reflections": false,
+
+        // Stage objects (stobjs) like party balls and goaltapes may show up incorrectly
+        // or not at all if they reside on an itemgroup whose index is >127. This patch
+        // increases the limit to 256 total itemgroups.
+        "stobj_draw_fix": false
+    },
+
+    // Toggles which party games are accessible from the party game menu.
+    // Disabled party games cannot be unlocked or accessed.
+    // Requires the patch 'party_game_toggle' to be enabled.
+    "party_game_toggles": {
+        "race": false,
+        "fight": false,
+        "target": false,
+        "billiards": false,
+        "bowling": false,
+        "golf": false,
+        "boat": false,
+        "shot": false,
+        "dogfight": false,
+        "soccer": false,
+        "baseball": false,
+        "tennis": false
+    },
+
+    // Defines the stages in Story Mode. Requires the "custom_stage_info" patch to be enabled. You
+    // may specify less than 10 worlds, but you must currently have exactly 10 stages per world.
+    "story_mode_layout": [
+        [ // World 1
+            { // 1-1
+                "stage_id": 1,
+                "name": "Poopoo",
+                "theme_id": 0,
+                "music_id": 0,
+                "time_limit": 60.00
+            },
+            { // 1-2
+                "stage_id": 2,
+                "name": "Peepee",
+                "theme_id": 0,
+                "music_id": 0,
+                "time_limit": 30.00
+            }
+            // ...
+        ],
+        [ // World 2
+            { // 1-1
+                "stage_id": 1,
+                "name": "Poopoo",
+                "theme_id": 0,
+                "music_id": 0,
+                "time_limit": 60.00
+            },
+            { // 1-2
+                "stage_id": 2,
+                "name": "Peepee",
+                "theme_id": 0,
+                "music_id": 0,
+                "time_limit": 30.00
+            }
+            // ...
+        ]
+    ],
+
+    // Defines the stages in Challenge Mode. Requires the "custom_stage_info" patch to be enabled.
+    "challenge_mode_layout": {
+        "beginner": [
+            { // Beginner 1
+                "stage_id": 1,
+                "name": "Poopoo",
+                "theme_id": 0,
+                "music_id": 0,
+                "time_limit": 60.00,
+
+                "blue_goal_jump": 1,
+                "green_goal_jump": 2,
+                "red_goal_jump": 4,
+                "is_bonus_stage": false
+            },
+            { // Beginner 2
+                "stage_id": 2,
+                "name": "Peepee",
+                "theme_id": 0,
+                "music_id": 0,
+                "time_limit": 60.00,
+
+                "blue_goal_jump": 1,
+                "green_goal_jump": 2,
+                "red_goal_jump": 4,
+                "is_bonus_stage": true
+            }
+        ],
+
+        "beginner_extra": [
+            { // Beginner Extra 1
+                "stage_id": 1,
+                "name": "Poopoo",
+                "theme_id": 0,
+                "music_id": 0,
+                "time_limit": 60.00,
+
+                "blue_goal_jump": 1,
+                "green_goal_jump": 2,
+                "red_goal_jump": 4,
+                "is_bonus_stage": false
+            },
+            { // Beginner Extra 2
+                "stage_id": 2,
+                "name": "Peepee",
+                "theme_id": 0,
+                "music_id": 0,
+                "time_limit": 60.00,
+
+                "blue_goal_jump": 1,
+                "green_goal_jump": 2,
+                "red_goal_jump": 4,
+                "is_bonus_stage": true
+            }
+        ],
+
+        "advanced": [],
+        "advanced_extra": [],
+        "expert": [],
+        "expert_extra": [],
+        "master": [],
+        "master_extra": []
+    }
+}
