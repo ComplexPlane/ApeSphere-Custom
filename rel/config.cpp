@@ -53,6 +53,17 @@ class ParseStack {
         m_parse_stack_ptr--;
     }
 
+    void print_parse_trace_prefix() {
+        mkb::OSReport("[wsmod] Error parsing config: config");
+        for (u32 i = 0; i < m_parse_stack_ptr; i++) {
+            if (m_parse_stack[i].type == AccessorType::Key) {
+                mkb::OSReport("[\"%s\"]", m_parse_stack[i].key);
+            } else {
+                mkb::OSReport("[%d]", m_parse_stack[i].index);
+            }
+        }
+    }
+
     [[noreturn]] void abort_with_trace(const char* suffix) {
         print_parse_trace_prefix();
         log::abort(suffix);
@@ -73,17 +84,6 @@ class ParseStack {
 
     Accessor m_parse_stack[MAX_PARSE_DEPTH];
     u32 m_parse_stack_ptr = 0;
-
-    void print_parse_trace_prefix() {
-        mkb::OSReport("[wsmod] Error parsing config: config");
-        for (u32 i = 0; i < m_parse_stack_ptr; i++) {
-            if (m_parse_stack[i].type == AccessorType::Key) {
-                mkb::OSReport("[\"%s\"]", m_parse_stack[i].key);
-            } else {
-                mkb::OSReport("[%d]", m_parse_stack[i].index);
-            }
-        }
-    }
 
     void push_access(const Accessor& accessor) {
         MOD_ASSERT(m_parse_stack_ptr < MAX_PARSE_DEPTH);
@@ -268,15 +268,18 @@ static void parse_patches(JsonObject root_obj) {
     for (u32 i = 0; i < relpatches::PATCH_COUNT; i++) {
         auto& patch = relpatches::patches[i];
         patch.status = parse_bool_field(patches_obj, patch.name);
-        root_obj.remove(patch.name);
+        patches_obj.remove(patch.name);
     }
 
     // Other patches specified? Throw error instead of failing silently
-    if (root_obj.size() > 0) {
-        for (JsonPair pair : root_obj) {
+    if (patches_obj.size() > 0) {
+        for (JsonPair pair : patches_obj) {
             s_parse_stack.push(pair.key().c_str());
-            s_parse_stack.abort_with_trace(" is an unknown patch\n");
+            s_parse_stack.print_parse_trace_prefix();
+            s_parse_stack.pop();
+            mkb::OSReport(" is an unknown patch\n");
         }
+        log::abort();
     }
 
     s_parse_stack.pop();
