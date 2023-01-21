@@ -95,7 +95,7 @@ void init_main_game();
 namespace extend_reflections {
 void init_main_loop();
 void mirror_tick();
-float get_distance(Vec3f& vec1, Vec3f& vec2);
+float get_distance(Vec& vec1, Vec& vec2);
 
 }
 

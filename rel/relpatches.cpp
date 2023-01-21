@@ -200,9 +200,9 @@ namespace relpatches
                 event_info_tick_tramp,
                 mkb::event_info_tick, []() {
                     event_info_tick_tramp.dest();
-                    if (mkb::mode_info.ball_mode == mkb::BALLMODE_ON_BONUS_STAGE &&
+                    if (mkb::mode_info.g_ball_mode == mkb::BALLMODE_ON_BONUS_STAGE &&
                         mkb::mode_info.bananas_remaining == 0) {
-                        mkb::mode_info.ball_mode |= 0x228;
+                        mkb::mode_info.g_ball_mode |= 0x228;
                     }
                 });
     }
@@ -335,26 +335,26 @@ namespace relpatches
             u32 display = death_count[mkb::curr_player_idx];
 
             if (display == 0) {
-                sprite->blue = 0;
+                sprite->mult_color.blue = 0;
             }
             else {
-                sprite->blue = 0xff;
+                sprite->mult_color.blue = 0xff;
             }
 
             if (display > 9999) {
-                sprite->g_width = 0.3;
+                sprite->width = 0.3;
             }
             else if (display > 999) {
-                sprite->g_width = 0.4;
+                sprite->width = 0.4;
             }
             else if (display > 99) {
-                sprite->g_width = 0.5;
+                sprite->width = 0.5;
             }
             else if (display > 9) {
-                sprite->g_width = 0.6;
+                sprite->width = 0.6;
             }
             else {
-                sprite->g_width = 1;
+                sprite->width = 1;
             }
 
             mkb::sprintf(sprite->text, "%u", display);
@@ -402,7 +402,7 @@ namespace relpatches
 
     namespace extend_reflections {
         float nearest_dist_to_mir, distance_to_mirror;
-        Vec3f current_ball_position, mirror_origin, ig_init_pos, translation_factor;
+        Vec current_ball_position, mirror_origin, ig_init_pos, translation_factor;
         mkb::Itemgroup* active_ig;
 
         // Hooks into the reflection-handling function, calling our function instead
@@ -428,12 +428,12 @@ namespace relpatches
                         for (u32 refl_idx = 0; refl_idx < hdr->reflective_stage_model_count; refl_idx++) {
                             mkb::StagedefReflectiveStageModel* refl = &hdr->reflective_stage_model_list[refl_idx];
                             current_ball_position = ball->pos;
-                            distance_to_mirror = get_distance(current_ball_position, refl->g_model_header_ptr->origin);
+                            distance_to_mirror = get_distance(current_ball_position, refl->g_model_header_ptr->bound_sphere_center);
 
                             if (nearest_dist_to_mir == -1.0 || distance_to_mirror < nearest_dist_to_mir) {
                                 nearest_dist_to_mir = distance_to_mirror;
                                 active_ig = &mkb::itemgroups[col_hdr_idx];
-                                mirror_origin = refl->g_model_header_ptr->origin;
+                                mirror_origin = refl->g_model_header_ptr->bound_sphere_center;
                                 ig_init_pos = hdr->origin;
                             }
                         }
@@ -460,7 +460,7 @@ namespace relpatches
             return;
         }
 
-        float get_distance(Vec3f& vec1, Vec3f& vec2)
+        float get_distance(Vec& vec1, Vec& vec2)
         {
             float xcmp = (vec1.x-vec2.x)*(vec1.x-vec2.x);
             float ycmp = (vec1.y-vec2.y)*(vec1.y-vec2.y);
