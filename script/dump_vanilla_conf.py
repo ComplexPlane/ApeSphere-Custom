@@ -17,6 +17,7 @@ VANILLA_ROOT_PATH = Path(
 )
 
 CourseCommand = namedtuple("CourseCommand", ["opcode", "type", "value"])
+SmStageInfo = namedtuple("SmStageInfo", ["stage_id", "difficulty"])
 
 # CMD opcodes
 CMD_IF = 0
@@ -224,10 +225,75 @@ def annotate_cm_layout_dump(dump: str) -> str:
             # Don't reset floor num if new difficulty not detected
             floor_num = old_floor_num
 
-        new_line = line
+        new_line = line[:]
         if "{" in new_line and last_course is not None:
             new_line += f" // {last_course} {floor_num}"
             floor_num += 1
+
+        new_line = new_line.replace("60.0", "60.00")
+        new_line = new_line.replace("30.0", "30.00")
+
+        out_lines.append(new_line)
+
+        if '"time_limit"' in new_line:
+            out_lines.append("")
+
+    return "\n".join(out_lines)
+
+
+def dump_storymode_world_layout(
+    mainloop_buffer,
+    stgname_lines,
+    stage_id_to_theme_id_map,
+    theme_id_to_music_id_map,
+    start,
+):
+    stage_info_size = 0x4
+
+    stage_infos: list[SmStageInfo] = []
+    for i in range(10):
+        offs = start + i * stage_info_size
+        stage_info = SmStageInfo._make(struct.unpack_from(">hh", mainloop_buffer, offs))
+        stage_infos.append(stage_info)
+
+    out_json_array = []
+    for stage_info in stage_infos:
+        time_limit = 60 * 60 if stage_info.stage_id != 30 else 60 * 30
+        theme_id, music_id = get_theme_and_music_ids(
+            stage_info.stage_id, stage_id_to_theme_id_map, theme_id_to_music_id_map
+        )
+        out_json_array.append(
+            {
+                "stage_id": stage_info.stage_id,
+                "name": stgname_lines[stage_info.stage_id],
+                "theme_id": theme_id,
+                "music_id": music_id,
+                "time_limit": float(time_limit / 60),
+                "difficulty": stage_info.difficulty,
+            }
+        )
+
+    return out_json_array
+
+
+def annotate_story_layout_dump(dump: str) -> str:
+    lines = dump.split("\n")
+    out_lines: list[str] = []
+
+    last_course = None
+    world = -1
+    stage = 0
+    for line in lines:
+        new_line = line[:]
+
+        if "[" in line:
+            world += 1
+            stage = 0
+            if world >= 1:
+                new_line += f" // World {world}"
+        if "{" in line:
+            stage += 1
+            new_line += f" // Floor {world}-{stage}"
 
         new_line = new_line.replace("60.0", "60.00")
         new_line = new_line.replace("30.0", "30.00")
@@ -336,7 +402,33 @@ def main():
 
     cm_layout_dump = json.dumps(cm_layout, indent=4)
     annotated_cm_layout_dump = annotate_cm_layout_dump(cm_layout_dump)
-    print(annotated_cm_layout_dump)
+
+    world_offsets = [
+        0x0020b448,
+        0x0020b470,
+        0x0020b498,
+        0x0020b4c0,
+        0x0020b4e8,
+        0x0020b510,
+        0x0020b538,
+        0x0020b560,
+        0x0020b588,
+        0x0020b5b0,
+    ]
+    worlds = []
+    for offs in world_offsets:
+        world = dump_storymode_world_layout(
+            mainloop_buffer,
+            stgname_lines,
+            stage_id_to_theme_id_map,
+            theme_id_to_music_id_map,
+            offs,
+        )
+        worlds.append(world)
+
+    story_layout_dump = json.dumps(worlds, indent=4)
+    annotated_story_layout_dump = annotate_story_layout_dump(story_layout_dump)
+    print(annotated_story_layout_dump)
 
 
 if __name__ == "__main__":
