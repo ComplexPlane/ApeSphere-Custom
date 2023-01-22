@@ -311,7 +311,7 @@ static void parse_party_game_toggles(JsonObject root_obj, Config &out_config) {
 Config *parse() {
     // ArduinoJson uses less memory given a mutable input
     char* json_text = static_cast<char*>(read_file("config.json"));
-    BasicJsonDocument<Allocator> doc(2048);
+    BasicJsonDocument<Allocator> doc(1024 * 64);
     DeserializationError err = deserializeJson(doc, json_text);
     if (err) {
         mkb::OSReport("[wsmod] Error parsing config: %s\n", err.c_str());
