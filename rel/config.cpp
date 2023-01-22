@@ -152,7 +152,7 @@ static JsonArray parse_array_field(JsonObject parent, const char* field_name) {
     s_parse_stack.push(field_name);
     JsonArray arr = parent[field_name];
     if (arr.isNull()) {
-        s_parse_stack.abort_with_trace(" is missing or isn't an array");
+        s_parse_stack.abort_with_trace(" is missing or isn't an array\n");
     }
     s_parse_stack.pop();
     return arr;
@@ -217,7 +217,10 @@ static FixedArray<CmStageInfo> parse_cm_course(JsonObject layout_obj, const char
     return stage_list;
 }
 
-static void parse_cm_layout(JsonObject layout_obj, Config &out_config) {
+static void parse_cm_layout(JsonObject root_obj, Config &out_config) {
+    JsonObject layout_obj = parse_object_field(root_obj, "challenge_mode_layout");
+    s_parse_stack.push("challenge_mode_layout");
+
     out_config.cm_layout.beginner = parse_cm_course(layout_obj, "beginner");
     out_config.cm_layout.beginner_extra = parse_cm_course(layout_obj, "beginner_extra");
     out_config.cm_layout.advanced = parse_cm_course(layout_obj, "advanced");
@@ -226,6 +229,8 @@ static void parse_cm_layout(JsonObject layout_obj, Config &out_config) {
     out_config.cm_layout.expert_extra = parse_cm_course(layout_obj, "expert_extra");
     out_config.cm_layout.master = parse_cm_course(layout_obj, "master");
     out_config.cm_layout.master_extra = parse_cm_course(layout_obj, "master_extra");
+
+    s_parse_stack.pop();
 }
 
 static void parse_patches(JsonObject root_obj) {
