@@ -210,6 +210,7 @@ static FixedArray<CmStageInfo> parse_cm_course(JsonObject layout_obj, const char
         out_stage.blue_goal_jump = parse_int_field(stage_j, "blue_goal_jump");
         out_stage.green_goal_jump = parse_int_field(stage_j, "green_goal_jump");
         out_stage.red_goal_jump = parse_int_field(stage_j, "red_goal_jump");
+        out_stage.is_bonus_stage = parse_bool_field(stage_j, "is_bonus_stage");
 
         i++;
         s_parse_stack.pop();
