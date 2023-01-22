@@ -10,6 +10,7 @@ import struct
 from collections import namedtuple
 import logging
 import sys
+import json
 
 VANILLA_ROOT_PATH = Path(
     "/mnt/c/Users/ComplexPlane/Documents/projects/romhack/smb2imm/files"
@@ -57,6 +58,7 @@ def parse_cm_course(mainloop_buffer, stgname_lines, bonus_stage_ids, start, coun
     red_jump = None
     last_goal_type = None
     first = True
+    finished = False
 
     for cmd in cmds:
         if cmd.opcode == CMD_FLOOR:
@@ -112,11 +114,11 @@ def parse_cm_course(mainloop_buffer, stgname_lines, bonus_stage_ids, start, coun
                         green_jump = cmd.value
                     if red_jump is None:
                         red_jump = cmd.value
-                elif last_goal_type == ord('B'):
+                elif last_goal_type == 0:
                     blue_jump = cmd.value
-                elif last_goal_type == ord('G'):
+                elif last_goal_type == 1:
                     green_jump = cmd.value
-                elif last_goal_type == ord('R'):
+                elif last_goal_type == 2:
                     red_jump = cmd.value
                 else:
                     logging.error(f"Invalid last goal type: {last_goal_type}")
@@ -146,10 +148,15 @@ def parse_cm_course(mainloop_buffer, stgname_lines, bonus_stage_ids, start, coun
                 "red_goal_jump": red_jump if red_jump is not None else blue_jump,
                 "is_bonus_stage": stage_id in bonus_stage_ids,
             })
+            finished = True
 
         else:
             logging.error(f"Invalid opcode: {cmd.opcode}")
             sys.exit(1)
+
+    if not finished:
+        logging.error("Course command list ended early")
+        sys.exit(1)
 
     return cm_stage_infos
 
@@ -164,9 +171,25 @@ def main():
 
     # Parse challenge mode entries
     beginner = parse_cm_course(mainloop_buffer, stgname_lines, bonus_stage_ids, 0x002075B0, 31)
-    for stage in beginner:
-        print(stage)
+    advanced = parse_cm_course(mainloop_buffer, stgname_lines, bonus_stage_ids, 0x00207914, 120)
+    expert = parse_cm_course(mainloop_buffer, stgname_lines, bonus_stage_ids, 0x00208634, 208)
+    beginner_extra = parse_cm_course(mainloop_buffer, stgname_lines, bonus_stage_ids, 0x00209cf4, 35)
+    advanced_extra = parse_cm_course(mainloop_buffer, stgname_lines, bonus_stage_ids, 0x0020a0c8, 32)
+    expert_extra = parse_cm_course(mainloop_buffer, stgname_lines, bonus_stage_ids, 0x0020a448, 42)
+    master = parse_cm_course(mainloop_buffer, stgname_lines, bonus_stage_ids, 0x0020a8e0, 35)
+    master_extra = parse_cm_course(mainloop_buffer, stgname_lines, bonus_stage_ids, 0x0020acb4, 50)
+    cm_layout = {
+        "beginner": beginner,
+        "beginner_extra": beginner_extra,
+        "advanced": advanced,
+        "advanced_extra": advanced_extra,
+        "expert": expert,
+        "expert_extra": expert_extra,
+        "master": master,
+        "master_extra": master_extra,
+    }
 
+    print(json.dumps(cm_layout, indent=4))
 
 if __name__ == "__main__":
     main()
