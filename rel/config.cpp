@@ -162,6 +162,7 @@ static JsonArray parse_array_field(JsonObject parent, const char* field_name) {
 // Validate and parse stuff from loaded json config
 //
 
+static constexpr int STAGES_PER_WORLD = 10;
 
 static const char* party_game_names[] = {
     "race", "fight", "target",   "billiards", "bowling",  "golf",
@@ -257,9 +258,13 @@ static void parse_story_layout(JsonObject root_obj, Config &out_config) {
     s_parse_stack.push("story_mode_layout");
 
     // Allocate worlds array
-    if (worlds_j.size() < 1 || worlds_j.size() > 10) {
+    if (worlds_j.size() < 1 || worlds_j.size() > STAGES_PER_WORLD) {
         s_parse_stack.abort_with_trace(" has invalid world count\n");
     }
+
+    // TODO allocate on parse heap
+    out_config.story_layout.elems =
+        static_cast<WorldLayout*>(heap::alloc(sizeof(WorldLayout) * worlds_j.size()));
 
     size_t world_idx = 0;
     for (JsonArray world_j : worlds_j) {
@@ -267,7 +272,7 @@ static void parse_story_layout(JsonObject root_obj, Config &out_config) {
         if (world_j.isNull()) {
             s_parse_stack.abort_with_trace(" isn't an array\n");
         }
-        if (world_j.size() != 10) {
+        if (world_j.size() != STAGES_PER_WORLD) {
             s_parse_stack.abort_with_trace(" has invalid stage count\n");
         }
 
@@ -334,9 +339,9 @@ Config *parse() {
 
     // This directly enables/disables patches instead of storing in Config.
     // Might be cleaner to parse to bitflag in Config or something
-    parse_patches(root_obj);
     bool party_game_toggle = root_obj["patches"]["party_game_toggle"];
     bool custom_stage_info = root_obj["patches"]["custom_stage_info"];
+    parse_patches(root_obj);
 
     if (party_game_toggle) {
         parse_party_game_toggles(root_obj, *config);
