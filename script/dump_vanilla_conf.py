@@ -37,16 +37,34 @@ FLOOR_STAGE_ID = 0
 FLOOR_TIME = 1
 
 
-def parse_cm_course(mainloop_buffer, stgname_lines, bonus_stage_ids, start, count):
+def get_theme_and_music_ids(stage_id, stage_id_to_theme_id, theme_id_to_music_id):
+    theme_id = stage_id_to_theme_id[stage_id]
+    if theme_id > 42:
+        theme_id = 42
+    music_id = theme_id_to_music_id[theme_id]
+    return (theme_id, music_id)
+
+
+def parse_cm_course(
+    mainloop_buffer,
+    stgname_lines,
+    bonus_stage_ids,
+    stage_id_to_theme_id_map,
+    theme_id_to_music_id_map,
+    start,
+    count,
+):
     cmds: list[CourseCommand] = []
     course_cmd_size = 0x1C
 
     for i in range(count):
-        course_cmd = CourseCommand._make(struct.unpack_from(
-            ">BBxxI20x",
-            mainloop_buffer,
-            start + i * course_cmd_size,
-        ))
+        course_cmd = CourseCommand._make(
+            struct.unpack_from(
+                ">BBxxI20x",
+                mainloop_buffer,
+                start + i * course_cmd_size,
+            )
+        )
         cmds.append(course_cmd)
 
     # Course commands to stage infos
@@ -68,18 +86,27 @@ def parse_cm_course(mainloop_buffer, stgname_lines, bonus_stage_ids, start, coun
                         logging.error("Invalid blue goal jump")
                         sys.exit(1)
 
-                    cm_stage_infos.append({
-                        "stage_id": stage_id,
-                        "name": stgname_lines[stage_id],
-                        "theme_id": 0, # TODO
-                        "music_id": 0, # TODO
-                        "time_limit": float(stage_time / 60),                      
+                    theme_id, music_id = get_theme_and_music_ids(
+                        stage_id, stage_id_to_theme_id_map, theme_id_to_music_id_map
+                    )
 
-                        "blue_goal_jump": blue_jump,
-                        "green_goal_jump": green_jump if green_jump is not None else blue_jump,
-                        "red_goal_jump": red_jump if red_jump is not None else blue_jump,
-                        "is_bonus_stage": stage_id in bonus_stage_ids,
-                    })
+                    cm_stage_infos.append(
+                        {
+                            "stage_id": stage_id,
+                            "name": stgname_lines[stage_id],
+                            "theme_id": theme_id,
+                            "music_id": music_id,
+                            "time_limit": float(stage_time / 60),
+                            "blue_goal_jump": blue_jump,
+                            "green_goal_jump": green_jump
+                            if green_jump is not None
+                            else blue_jump,
+                            "red_goal_jump": red_jump
+                            if red_jump is not None
+                            else blue_jump,
+                            "is_bonus_stage": stage_id in bonus_stage_ids,
+                        }
+                    )
                     stage_id = 0
                     stage_time = 60 * 60
                     blue_jump = None
@@ -136,18 +163,24 @@ def parse_cm_course(mainloop_buffer, stgname_lines, bonus_stage_ids, start, coun
             if blue_jump is None:
                 logging.error("Invalid blue goal jump")
                 sys.exit(1)
-            cm_stage_infos.append({
-                "stage_id": stage_id,
-                "name": stgname_lines[stage_id],
-                "theme_id": 0, # TODO
-                "music_id": 0, # TODO
-                "time_limit": float(stage_time / 60),                      
-
-                "blue_goal_jump": blue_jump,
-                "green_goal_jump": green_jump if green_jump is not None else blue_jump,
-                "red_goal_jump": red_jump if red_jump is not None else blue_jump,
-                "is_bonus_stage": stage_id in bonus_stage_ids,
-            })
+            theme_id, music_id = get_theme_and_music_ids(
+                stage_id, stage_id_to_theme_id_map, theme_id_to_music_id_map
+            )
+            cm_stage_infos.append(
+                {
+                    "stage_id": stage_id,
+                    "name": stgname_lines[stage_id],
+                    "theme_id": theme_id,
+                    "music_id": music_id,
+                    "time_limit": float(stage_time / 60),
+                    "blue_goal_jump": blue_jump,
+                    "green_goal_jump": green_jump
+                    if green_jump is not None
+                    else blue_jump,
+                    "red_goal_jump": red_jump if red_jump is not None else blue_jump,
+                    "is_bonus_stage": stage_id in bonus_stage_ids,
+                }
+            )
             finished = True
 
         else:
@@ -168,7 +201,7 @@ def annotate_cm_layout_dump(dump: str) -> str:
     last_course = None
     floor_num = 1
     for line in lines:
-        
+
         old_floor_num = floor_num
         floor_num = 1
         if '"beginner"' in line:
@@ -194,11 +227,11 @@ def annotate_cm_layout_dump(dump: str) -> str:
         new_line = line
         if "{" in new_line and last_course is not None:
             new_line += f" // {last_course} {floor_num}"
-            floor_num += 1 
+            floor_num += 1
 
         new_line = new_line.replace("60.0", "60.00")
         new_line = new_line.replace("30.0", "30.00")
-        
+
         out_lines.append(new_line)
 
         if '"time_limit"' in new_line:
@@ -214,16 +247,82 @@ def main():
         stgname_lines = [s.strip() for s in f.readlines()]
 
     bonus_stage_ids = struct.unpack_from(">9i", mainloop_buffer, 0x00176118)
+    stage_id_to_theme_id_map = struct.unpack_from(">428B", mainloop_buffer, 0x00204E48)
+    theme_id_to_music_id_map = struct.unpack_from(">43h", mainloop_buffer, 0x0016E738)
 
     # Parse challenge mode entries
-    beginner = parse_cm_course(mainloop_buffer, stgname_lines, bonus_stage_ids, 0x002075B0, 31)
-    advanced = parse_cm_course(mainloop_buffer, stgname_lines, bonus_stage_ids, 0x00207914, 120)
-    expert = parse_cm_course(mainloop_buffer, stgname_lines, bonus_stage_ids, 0x00208634, 208)
-    beginner_extra = parse_cm_course(mainloop_buffer, stgname_lines, bonus_stage_ids, 0x00209cf4, 35)
-    advanced_extra = parse_cm_course(mainloop_buffer, stgname_lines, bonus_stage_ids, 0x0020a0c8, 32)
-    expert_extra = parse_cm_course(mainloop_buffer, stgname_lines, bonus_stage_ids, 0x0020a448, 42)
-    master = parse_cm_course(mainloop_buffer, stgname_lines, bonus_stage_ids, 0x0020a8e0, 35)
-    master_extra = parse_cm_course(mainloop_buffer, stgname_lines, bonus_stage_ids, 0x0020acb4, 50)
+    beginner = parse_cm_course(
+        mainloop_buffer,
+        stgname_lines,
+        bonus_stage_ids,
+        stage_id_to_theme_id_map,
+        theme_id_to_music_id_map,
+        0x002075B0,
+        31,
+    )
+    advanced = parse_cm_course(
+        mainloop_buffer,
+        stgname_lines,
+        bonus_stage_ids,
+        stage_id_to_theme_id_map,
+        theme_id_to_music_id_map,
+        0x00207914,
+        120,
+    )
+    expert = parse_cm_course(
+        mainloop_buffer,
+        stgname_lines,
+        bonus_stage_ids,
+        stage_id_to_theme_id_map,
+        theme_id_to_music_id_map,
+        0x00208634,
+        208,
+    )
+    beginner_extra = parse_cm_course(
+        mainloop_buffer,
+        stgname_lines,
+        bonus_stage_ids,
+        stage_id_to_theme_id_map,
+        theme_id_to_music_id_map,
+        0x00209CF4,
+        35,
+    )
+    advanced_extra = parse_cm_course(
+        mainloop_buffer,
+        stgname_lines,
+        bonus_stage_ids,
+        stage_id_to_theme_id_map,
+        theme_id_to_music_id_map,
+        0x0020A0C8,
+        32,
+    )
+    expert_extra = parse_cm_course(
+        mainloop_buffer,
+        stgname_lines,
+        bonus_stage_ids,
+        stage_id_to_theme_id_map,
+        theme_id_to_music_id_map,
+        0x0020A448,
+        42,
+    )
+    master = parse_cm_course(
+        mainloop_buffer,
+        stgname_lines,
+        bonus_stage_ids,
+        stage_id_to_theme_id_map,
+        theme_id_to_music_id_map,
+        0x0020A8E0,
+        35,
+    )
+    master_extra = parse_cm_course(
+        mainloop_buffer,
+        stgname_lines,
+        bonus_stage_ids,
+        stage_id_to_theme_id_map,
+        theme_id_to_music_id_map,
+        0x0020ACB4,
+        50,
+    )
     cm_layout = {
         "beginner": beginner,
         "beginner_extra": beginner_extra,
@@ -238,6 +337,7 @@ def main():
     cm_layout_dump = json.dumps(cm_layout, indent=4)
     annotated_cm_layout_dump = annotate_cm_layout_dump(cm_layout_dump)
     print(annotated_cm_layout_dump)
+
 
 if __name__ == "__main__":
     main()
