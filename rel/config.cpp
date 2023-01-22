@@ -131,7 +131,9 @@ static int parse_int_field(JsonObject parent, const char* field_name) {
 static float parse_float_field(JsonObject parent, const char* field_name) {
     s_parse_stack.push(field_name);
     JsonVariant variant = parent[field_name];
-    if (!variant.is<float>()) {
+    // ArduinoJson seems to be happy to implicitly convert JSON ints to floats, but to keep it
+    // simple let's be strict
+    if (variant.is<int>() || !variant.is<float>()) {
         s_parse_stack.abort_with_trace(" is missing or isn't a float\n");
     }
     s_parse_stack.pop();
