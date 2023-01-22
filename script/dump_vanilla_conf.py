@@ -161,6 +161,52 @@ def parse_cm_course(mainloop_buffer, stgname_lines, bonus_stage_ids, start, coun
     return cm_stage_infos
 
 
+def annotate_cm_layout_dump(dump: str) -> str:
+    lines = dump.split("\n")
+    out_lines: list[str] = []
+
+    last_course = None
+    floor_num = 1
+    for line in lines:
+        
+        old_floor_num = floor_num
+        floor_num = 1
+        if '"beginner"' in line:
+            last_course = "Beginner"
+        elif '"beginner_extra"' in line:
+            last_course = "Beginner Extra"
+        elif '"advanced"' in line:
+            last_course = "Advanced"
+        elif '"advanced_extra"' in line:
+            last_course = "Advanced Extra"
+        elif '"expert"' in line:
+            last_course = "Expert"
+        elif '"expert_extra"' in line:
+            last_course = "Expert Extra"
+        elif '"master"' in line:
+            last_course = "Master"
+        elif '"master_extra"' in line:
+            last_course = "Master Extra"
+        else:
+            # Don't reset floor num if new difficulty not detected
+            floor_num = old_floor_num
+
+        new_line = line
+        if "{" in new_line and last_course is not None:
+            new_line += f" // {last_course} {floor_num}"
+            floor_num += 1 
+
+        new_line = new_line.replace("60.0", "60.00")
+        new_line = new_line.replace("30.0", "30.00")
+        
+        out_lines.append(new_line)
+
+        if '"time_limit"' in new_line:
+            out_lines.append("")
+
+    return "\n".join(out_lines)
+
+
 def main():
     with open(VANILLA_ROOT_PATH / "mkb2.main_loop.rel", "rb") as f:
         mainloop_buffer = f.read()
@@ -189,7 +235,9 @@ def main():
         "master_extra": master_extra,
     }
 
-    print(json.dumps(cm_layout, indent=4))
+    cm_layout_dump = json.dumps(cm_layout, indent=4)
+    annotated_cm_layout_dump = annotate_cm_layout_dump(cm_layout_dump)
+    print(annotated_cm_layout_dump)
 
 if __name__ == "__main__":
     main()
