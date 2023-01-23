@@ -46,7 +46,15 @@ void init()
     perform_assembly_patches();
 
     // Load our config file
-    config::parse();
+    config::Config *config = config::parse();
+
+    // Run all patch main_loop_init() funcs
+    for (unsigned int i = 0; i < relpatches::PATCH_COUNT; i++) {
+        if (relpatches::patches[i].enabled && relpatches::patches[i].main_loop_init_func != nullptr) {
+            relpatches::patches[i].main_loop_init_func(*config);
+        }
+    }
+    // TODO free parse heap
 
     patch::hook_function(s_draw_debugtext_tramp, mkb::draw_debugtext, []()
         {
