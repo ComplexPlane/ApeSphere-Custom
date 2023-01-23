@@ -243,7 +243,7 @@ static void parse_patches(JsonObject root_obj) {
     // Enable patches we know about, removing them as we go
     for (u32 i = 0; i < relpatches::PATCH_COUNT; i++) {
         auto& patch = relpatches::patches[i];
-        patch.status = parse_bool_field(patches_obj, patch.name);
+        patch.enabled = parse_bool_field(patches_obj, patch.name);
         patches_obj.remove(patch.name);
     }
 
