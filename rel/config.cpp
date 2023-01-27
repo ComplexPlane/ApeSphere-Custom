@@ -180,8 +180,7 @@ static void parse_stage_info(JsonObject stage_info, StageInfo& out_stage_info) {
     float time_limit = parse_float_field(stage_info, "time_limit");
 
     out_stage_info.stage_id = stage_id;
-    mkb::strncpy(out_stage_info.name, const_cast<char*>(name), sizeof(out_stage_info.name));
-    out_stage_info.name[sizeof(out_stage_info.name) - 1] = '\0';
+    out_stage_info.name = name;
     out_stage_info.theme_id = theme_id;
     out_stage_info.music_id = music_id;
     // This is not a correct way to do rounding, but we don't have a round function and it'll work
@@ -291,8 +290,9 @@ static void parse_story_layout(JsonObject root_obj, Config &out_config) {
                 s_parse_stack.abort_with_trace(" isn't an object\n");
             }
 
-            StageInfo &stage_info = out_config.story_layout.elems[world_idx][stage_idx];
+            SmStageInfo &stage_info = out_config.story_layout.elems[world_idx][stage_idx];
             parse_stage_info(stage_j, stage_info);
+            stage_info.difficulty = parse_int_field(stage_j, "difficulty");
 
             stage_idx++;
             s_parse_stack.pop();

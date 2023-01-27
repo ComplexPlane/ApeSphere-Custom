@@ -6,10 +6,14 @@ namespace config {
 
 struct StageInfo {
     u16 stage_id;
-    char name[32]; // TODO store stage names in compact format in memory a-la stgname file
+    const char *name;
     u16 theme_id;
     u16 music_id;
     u16 time_limit_frames;
+};
+
+struct SmStageInfo : StageInfo {
+    u8 difficulty;
 };
 
 struct CmStageInfo : StageInfo {
@@ -25,18 +29,19 @@ struct FixedArray {
     u32 size;
 };
 
-typedef StageInfo WorldLayout[10];
+typedef SmStageInfo WorldLayout[10];
 typedef FixedArray<WorldLayout> StoryLayout;
+typedef FixedArray<CmStageInfo> CmCourseLayout;
 
 struct CmLayout {
-    FixedArray<CmStageInfo> beginner;
-    FixedArray<CmStageInfo> beginner_extra;
-    FixedArray<CmStageInfo> advanced;
-    FixedArray<CmStageInfo> advanced_extra;
-    FixedArray<CmStageInfo> expert;
-    FixedArray<CmStageInfo> expert_extra;
-    FixedArray<CmStageInfo> master;
-    FixedArray<CmStageInfo> master_extra;
+    CmCourseLayout beginner;
+    CmCourseLayout beginner_extra;
+    CmCourseLayout advanced;
+    CmCourseLayout advanced_extra;
+    CmCourseLayout expert;
+    CmCourseLayout expert_extra;
+    CmCourseLayout master;
+    CmCourseLayout master_extra;
 };
 
 // Parsed/validated config allocated in "parse heap", which is freed after all init_main_loop()
