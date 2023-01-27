@@ -2166,6 +2166,23 @@ struct Ball {
 } __attribute__((__packed__));
 static_assert(sizeof(Ball) == 0x1b0);
 
+typedef struct SmWorldInfo SmWorldInfo, *PSmWorldInfo;
+
+typedef struct SmStageInfo SmStageInfo, *PSmStageInfo;
+
+struct SmWorldInfo {
+    s16 stage_count; /* Number of stages in world */
+    undefined field_0x2[0x2];
+    struct SmStageInfo * stages; /* List of infos for each stage in world */
+} __attribute__((__packed__));
+static_assert(sizeof(SmWorldInfo) == 0x8);
+
+struct SmStageInfo { /* A list of 10 of these is used to define a world */
+    s16 stage_id;
+    s16 difficulty;
+} __attribute__((__packed__));
+static_assert(sizeof(SmStageInfo) == 0x4);
+
 typedef struct Itemgroup Itemgroup, *PItemgroup;
 
 struct Itemgroup { /* Contains the current animation-related state of each item group in a stage (each thing corresponding to a collision header in the stagedef) */
@@ -5453,7 +5470,7 @@ extern "C" {
     extern float FLOAT0_2;
     extern float FLOAT480;
     extern float FLOAT640;
-    extern BgmTrack  g_bgm_id_lookup_table[42];
+    extern BgmTrack  g_bgm_id_lookup_table[43];
     extern struct GXColor debugtext_bg_color;
     extern float MAX_GX_FIFO_BUF_SIZE;
     extern float visual_ball_size;
@@ -5520,6 +5537,7 @@ extern "C" {
     extern pointer switchdataD_803809d0;
     extern struct SpriteDrawRequest ui_sprite_draw_req;
     extern undefined4 monkey_flags;
+    extern undefined g_some_music_status_array;
     extern undefined * switchdataD_80391aa0;
     extern undefined * switchdataD_80391ad8;
     extern undefined * switchdataD_80391be8;
@@ -5586,6 +5604,17 @@ extern "C" {
     extern undefined * cm_courses;
     extern pointer g_some_cm_entry_table2;
     extern undefined * g_some_cm_entry_table3;
+    extern struct SmStageInfo sm_stage_infos_world1[10];
+    extern struct SmStageInfo sm_stage_infos_world2[10];
+    extern struct SmStageInfo sm_stage_infos_world3[10];
+    extern struct SmStageInfo sm_stage_infos_world4[10];
+    extern struct SmStageInfo sm_stage_infos_world5[10];
+    extern struct SmStageInfo sm_stage_infos_world6[10];
+    extern struct SmStageInfo sm_stage_infos_world7[10];
+    extern struct SmStageInfo sm_stage_infos_world8[10];
+    extern struct SmStageInfo sm_stage_infos_world9[10];
+    extern struct SmStageInfo sm_stage_infos_world10[10];
+    extern struct SmWorldInfo sm_world_info[10];
     extern undefined * item_init_funcs;
     extern undefined * item_tick_funcs;
     extern undefined * item_disp_funcs;
@@ -5825,7 +5854,7 @@ extern "C" {
     extern undefined4 g_some_perf_timer16;
     extern undefined4 g_debug_sound_ram_usage;
     extern undefined4 g_debug_sound_aram_usage;
-    extern undefined2 g_active_music_tracks[10];
+    extern s16 g_active_music_tracks[10];
     extern undefined1 g_something_related_to_bgm_track_id;
     extern undefined1 g_some_music_related_counter;
     extern undefined4 current_bgm_volume;
@@ -8755,7 +8784,7 @@ extern "C" {
     void calc_stage_jump_distance(struct CmEntry * entry);
     void clear_next_cm_stage_id2(struct CmEntry * entry);
     void clear_next_cm_stage_id(struct CmEntry * entry);
-    s32 g_get_current_cm_stage_time_limit(void);
+    s32 get_current_cm_stage_time_limit(void);
     u32 g_update_cm_course(Difficulty  difficulty, s32 course_stage_num, ModeFlag  mode_flags);
     int calc_course_idx(Difficulty  difficulty, ModeFlag  mode_flags);
     bool g_are_on_final_course_level(int difficulty_id, int course_stage, uint difficulty_flags);
@@ -8770,13 +8799,14 @@ extern "C" {
     void sprite_debug_course_display_disp(undefined8 param_1, undefined8 param_2, double param_3, double param_4, undefined8 param_5, undefined8 param_6, undefined8 param_7, undefined8 param_8, int param_9, undefined4 param_10, undefined4 param_11, undefined4 param_12, undefined4 param_13, undefined4 param_14, undefined4 param_15, undefined4 param_16);
     void g_save_cm_unlock_entries(void);
     void g_load_cm_unlock_entries(void);
-    int get_world_beaten_stage_count(int world);
+    int get_world_stage_count(int world);
+    int get_world_unbeaten_stage_count(int world);
     int g_lookup_storymode_stage_id(int world_idx, int world_stage_idx);
-    int g_get_storymode_stage_id(int world, int stage);
+    int get_storymode_stage_difficulty(int world, int stage);
     void clear_unlocked_storymode_stages(void);
     void g_save_storymode_unlock_entries(void);
     void g_load_storymode_unlock_entries(void);
-    int is_timer_30s_or_60s(int param_1, int param_2);
+    int get_storymode_stage_time_limit(int world, int world_stage);
     void event_item_init(void);
     void event_item_tick(void);
     void event_item_dest(void);
@@ -9405,8 +9435,8 @@ extern "C" {
     void set_storymode_bananas(int banana_count);
     void g_preload_ape_model_for_stageselect(void);
     void g_save_storymode_progress(void * param_1);
-    int g_is_timer_30s_or_60s_current_stage(void);
-    int is_timer_30s_or_60s_wrapper(int param_1, int param_2);
+    int get_current_storymode_stage_time_limit(void);
+    int get_storymode_stage_time_limit_wrapper(int world, int world_stage);
     void g_some_scenario_init_func_1(void);
     void g_some_storymode_mode_handler(void);
     void g_get_storymode_playtime_frames(void);

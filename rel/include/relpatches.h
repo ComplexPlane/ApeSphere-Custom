@@ -10,7 +10,6 @@ struct Config;
 namespace relpatches
 {
 
-static constexpr u16 STAGE_COUNT = 421;
 extern u16 WORLD_COUNT;
 
 struct Tickable {
@@ -100,16 +99,6 @@ float get_distance(Vec& vec1, Vec& vec2);
 
 }
 
-namespace music_id_per_stage {
-void init_main_loop(const config::Config &config);
-
-}
-
-namespace theme_id_per_stage {
-void init_main_loop(const config::Config &config);
-
-}
-
 namespace skip_intro_movie {
 void init_main_loop(const config::Config &config);
 void smd_adv_first_logo_tick_patch();
@@ -150,6 +139,7 @@ void tick();
 namespace party_game_toggle {
 u32 number_of_unlocked_party_games(u32 i);
 u32 determine_party_game_unlock_status(int id);
+void main_loop_init(const config::Config &config);
 void sel_ngc_init();
 }
 

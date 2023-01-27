@@ -150,6 +150,7 @@ namespace relpatches
 
         {
             .name = "party_game_toggle",
+            .main_loop_init_func = party_game_toggle::main_loop_init,
             .sel_ngc_init_func = party_game_toggle::sel_ngc_init,
         },
 
@@ -361,21 +362,6 @@ namespace relpatches
     void fix_stobj_reflection::init_main_game()
     {
         patch::write_branch_bl(reinterpret_cast<void*>(0x80913F34), reinterpret_cast<void*>(main::reflection_view_stage_hook));
-    }
-
-    // Hooks into g_handle_world_bgm, modifies the variable for BGM ID to point to
-    // the one in our stage ID ->
-    void music_id_per_stage::init_main_loop(const config::Config &config)
-    {
-        patch::write_branch_bl(reinterpret_cast<void*>(0x802a5f08), reinterpret_cast<void*>(main::get_bgm_id_hook));
-    }
-
-    // Hooks into two functions that set the global world_theme variable
-    // Not entirely sure what the second one is for, but it may be used for SMB1 themes
-    void theme_id_per_stage::init_main_loop(const config::Config &config)
-    {
-        patch::write_branch(reinterpret_cast<void*>(0x802c7c3c), reinterpret_cast<void*>(main::get_theme_id_hook_1));
-        patch::write_branch(reinterpret_cast<void*>(0x802c7cc8), reinterpret_cast<void*>(main::get_theme_id_hook_2));
     }
 
     namespace extend_reflections {
@@ -782,6 +768,10 @@ namespace relpatches
                     return 0;
             }
 
+        }
+
+        void main_loop_init(const config::Config &config) {
+            s_party_game_bitflag = config.party_game_bitfield;
         }
 
         void sel_ngc_init() {

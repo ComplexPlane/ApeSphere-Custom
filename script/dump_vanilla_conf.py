@@ -235,8 +235,8 @@ def annotate_cm_layout_dump(dump: str) -> str:
 
         out_lines.append(new_line)
 
-        if '"time_limit"' in new_line:
-            out_lines.append("")
+        # if '"time_limit"' in new_line:
+        #     out_lines.append("")
 
     return "\n".join(out_lines)
 
@@ -293,15 +293,15 @@ def annotate_story_layout_dump(dump: str) -> str:
                 new_line += f" // World {world}"
         if "{" in line:
             stage += 1
-            new_line += f" // Floor {world}-{stage}"
+            new_line += f" // Stage {world}-{stage}"
 
         new_line = new_line.replace("60.0", "60.00")
         new_line = new_line.replace("30.0", "30.00")
 
         out_lines.append(new_line)
 
-        if '"time_limit"' in new_line:
-            out_lines.append("")
+        # if '"time_limit"' in new_line:
+        #     out_lines.append("")
 
     return "\n".join(out_lines)
 
