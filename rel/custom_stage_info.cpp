@@ -45,7 +45,7 @@ static constexpr u16 STAGE_COUNT = 421;
 
 static u16 s_bgm_id_lookup[STAGE_COUNT] = {};
 static u16 s_time_limit_lookup[STAGE_COUNT] = {};
-static u16 s_stage_name_offset_lookup[STAGE_COUNT] = {};
+static s16 s_stage_name_offset_lookup[STAGE_COUNT] = {};
 static char* s_stage_name_buffer;
 
 // Replication of vanilla function, but using our own theme lookup tables
@@ -116,34 +116,6 @@ static int get_storymode_stage_time_limit(int world, int world_stage) {
     return s_time_limit_lookup[stage_id];
 }
 
-static void check_for_duplicate_stage_ids(
-    const config::Config& config, const config::FixedArray<const config::CmCourseLayout>& layouts) {
-    // Check for duplicate stage IDs. Just reuse one of our lookup tables to avoid another
-    // allocation
-    for (u32 world = 0; world < config.story_layout.size; world++) {
-        const auto& stage_infos = config.story_layout.elems[world];
-        for (u32 world_stage = 0; world_stage < LEN(stage_infos); world_stage++) {
-            if (s_bgm_id_lookup[stage_infos[world_stage].stage_id] == 1) {
-                log::abort("[wsmod] Failed to load config: stage ID %d is used multiple times\n");
-            }
-            s_bgm_id_lookup[stage_infos[world_stage].stage_id] = 1;
-        }
-    }
-
-    for (u32 layout_idx = 0; layout_idx < layouts.size; layout_idx++) {
-        const auto& layout = layouts.elems[layout_idx];
-        for (u32 i = 0; i < layout.size; i++) {
-            const auto& stage = layout.elems[i];
-            if (s_bgm_id_lookup[stage.stage_id] == 1) {
-                log::abort("[wsmod] Failed to load config: stage ID %d is used multiple times\n");
-            }
-            s_bgm_id_lookup[stage.stage_id] = 1;
-        }
-    }
-
-    mkb::memset(s_bgm_id_lookup, 0, sizeof(s_bgm_id_lookup));
-}
-
 static void write_common_per_stage_info(
     const config::Config& config, const config::FixedArray<const config::CmCourseLayout>& layouts) {
     // Write theme IDs, music IDs, time limits
@@ -172,12 +144,18 @@ static void write_common_per_stage_info(
 
     PreallocBuffer name_prebuf;
 
+    // Use this for deduplicating the same stage name for the same ID
+    for (u32 i = 0; i < LEN(s_stage_name_offset_lookup); i++) {
+        s_stage_name_offset_lookup[i] = -1;
+    }
+
     // Prealloc first, then do it for real
     for (u32 i = 0; i < 2; i++) {
         for (u32 world = 0; world < config.story_layout.size; world++) {
             const auto& stage_infos = config.story_layout.elems[world];
             for (u32 world_stage = 0; world_stage < LEN(stage_infos); world_stage++) {
                 const auto& stage = stage_infos[world_stage];
+                if (s_stage_name_offset_lookup[stage.stage_id] != -1) continue;
                 s_stage_name_offset_lookup[stage.stage_id] = name_prebuf.write(stage.name);
             }
         }
@@ -186,6 +164,7 @@ static void write_common_per_stage_info(
             const auto& layout = layouts.elems[layout_idx];
             for (u32 i = 0; i < layout.size; i++) {
                 const auto& stage = layout.elems[i];
+                if (s_stage_name_offset_lookup[stage.stage_id] != -1) continue;
                 s_stage_name_offset_lookup[stage.stage_id] = name_prebuf.write(stage.name);
             }
         }
@@ -223,7 +202,6 @@ void init_main_loop(const config::Config& config) {
     };
     const config::FixedArray<const config::CmCourseLayout> layouts{layouts_arr, LEN(layouts_arr)};
 
-    check_for_duplicate_stage_ids(config, layouts);
     write_common_per_stage_info(config, layouts);
     write_storymode_entries(config);
 }
