@@ -6,8 +6,8 @@
 #include <mkb.h>
 #include "heap.h"
 #include "log.h"
-#include "relpatches.h"
 #include "mathutils.h"
+#include "relpatches.h"
 
 // TODO
 // Parse to fixed-size heap at end of main heap to avoid fragmentation?
@@ -33,7 +33,7 @@ static void* read_file(const char* path) {
 
     // Round up to a multiple of 32, necessary for DVDReadAsyncPrio
     u32 rounded_up_size = mkb::OSRoundUp32B(s_dvd_file_info.length);
-    void* file_buf = heap::alloc(rounded_up_size); // TODO use parse heap
+    void* file_buf = heap::alloc(rounded_up_size);  // TODO use parse heap
     u32 read_size = mkb::read_entire_file_using_dvdread_prio_async(&s_dvd_file_info, file_buf,
                                                                    rounded_up_size, 0);
     MOD_ASSERT(read_size > 0);
@@ -188,7 +188,7 @@ static void parse_stage_info(JsonObject stage_info, StageInfo& out_stage_info) {
     out_stage_info.time_limit_frames = static_cast<u32>(time_limit * 60 + 0.5);
 }
 
-static FixedArray<CmStageInfo> parse_cm_course(JsonObject layout_obj, const char *course_name) {
+static FixedArray<CmStageInfo> parse_cm_course(JsonObject layout_obj, const char* course_name) {
     JsonArray stage_list_j = parse_array_field(layout_obj, course_name);
     s_parse_stack.push(course_name);
 
@@ -219,7 +219,7 @@ static FixedArray<CmStageInfo> parse_cm_course(JsonObject layout_obj, const char
     return stage_list;
 }
 
-static void parse_cm_layout(JsonObject root_obj, Config &out_config) {
+static void parse_cm_layout(JsonObject root_obj, Config& out_config) {
     JsonObject layout_obj = parse_object_field(root_obj, "challenge_mode_layout");
     s_parse_stack.push("challenge_mode_layout");
 
@@ -260,7 +260,7 @@ static void parse_patches(JsonObject root_obj) {
     s_parse_stack.pop();
 }
 
-static void parse_story_layout(JsonObject root_obj, Config &out_config) {
+static void parse_story_layout(JsonObject root_obj, Config& out_config) {
     JsonArray worlds_j = parse_array_field(root_obj, "story_mode_layout");
     s_parse_stack.push("story_mode_layout");
 
@@ -270,8 +270,11 @@ static void parse_story_layout(JsonObject root_obj, Config &out_config) {
     }
 
     // TODO allocate on parse heap
-    out_config.story_layout.elems =
-        static_cast<WorldLayout*>(heap::alloc(sizeof(WorldLayout) * worlds_j.size()));
+    out_config.story_layout =
+        {
+            .elems = static_cast<WorldLayout*>(heap::alloc(sizeof(WorldLayout) * worlds_j.size())),
+            .size = worlds_j.size(),
+        };
 
     size_t world_idx = 0;
     for (JsonArray world_j : worlds_j) {
@@ -290,7 +293,7 @@ static void parse_story_layout(JsonObject root_obj, Config &out_config) {
                 s_parse_stack.abort_with_trace(" isn't an object\n");
             }
 
-            SmStageInfo &stage_info = out_config.story_layout.elems[world_idx][stage_idx];
+            SmStageInfo& stage_info = out_config.story_layout.elems[world_idx][stage_idx];
             parse_stage_info(stage_j, stage_info);
             stage_info.difficulty = parse_int_field(stage_j, "difficulty");
 
@@ -305,7 +308,7 @@ static void parse_story_layout(JsonObject root_obj, Config &out_config) {
     s_parse_stack.pop();
 }
 
-static void parse_party_game_toggles(JsonObject root_obj, Config &out_config) {
+static void parse_party_game_toggles(JsonObject root_obj, Config& out_config) {
     // Ignore party game toggles if the patch is disabled
 
     JsonObject party_games_obj = parse_object_field(root_obj, "party_game_toggles");
@@ -321,7 +324,7 @@ static void parse_party_game_toggles(JsonObject root_obj, Config &out_config) {
     s_parse_stack.pop();
 }
 
-Config *parse() {
+Config* parse() {
     // ArduinoJson uses less memory given a mutable input
     char* json_text = static_cast<char*>(read_file("config.json"));
     BasicJsonDocument<Allocator> doc(1024 * 64);
@@ -343,7 +346,7 @@ Config *parse() {
     }
 
     // TODO allocate on parse heap
-    Config *config = static_cast<Config*>(heap::alloc(sizeof(Config)));
+    Config* config = static_cast<Config*>(heap::alloc(sizeof(Config)));
 
     // This directly enables/disables patches instead of storing in Config.
     // Might be cleaner to parse to bitflag in Config or something
@@ -365,4 +368,4 @@ Config *parse() {
     return config;
 }
 
-}  // namespace newconf
+}  // namespace config
