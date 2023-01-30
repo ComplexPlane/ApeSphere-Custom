@@ -5,6 +5,7 @@
 #include "heap.h"
 #include "log.h"
 #include "mathutils.h"
+#include "mkb2_ghidra.h"
 #include "patch.h"
 
 namespace custom_stage_info {
@@ -41,12 +42,17 @@ class PreallocBuffer {
     bool m_write_mode = false;
 };
 
+static constexpr u32 div_power_2_round_up(u32 v, u32 div) {
+    return ((v + (div - 1)) & ~(div - 1)) / div;
+}
+
 static constexpr u16 STAGE_COUNT = 421;
 
 static u16 s_bgm_id_lookup[STAGE_COUNT] = {};
 static u16 s_time_limit_lookup[STAGE_COUNT] = {};
-static s16 s_stage_name_offset_lookup[STAGE_COUNT] = {};
+static u16 s_stage_name_offset_lookup[STAGE_COUNT] = {};
 static char* s_stage_name_buffer;
+static u8 s_is_bonus_stage_bitfield[div_power_2_round_up(STAGE_COUNT, 8)] = {};
 
 // Replication of vanilla function, but using our own theme lookup tables
 static void g_handle_world_bgm_hook(u32 g_volume) {
@@ -116,9 +122,11 @@ static int get_storymode_stage_time_limit_hook(int world, int world_stage) {
     return s_time_limit_lookup[stage_id];
 }
 
-static void write_common_per_stage_info(const config::Config& config) {
-    // Write theme IDs, music IDs, time limits
+static bool is_bonus_stage_hook(int stage_id) {
+    return s_is_bonus_stage_bitfield[stage_id / 8] & (1 << (stage_id % 8));
+}
 
+static void write_stage_info_arrays(const config::Config& config) {
     for (u32 world = 0; world < config.story_layout.size; world++) {
         const auto& stage_infos = config.story_layout.elems[world];
         for (u32 world_stage = 0; world_stage < LEN(stage_infos); world_stage++) {
@@ -136,6 +144,9 @@ static void write_common_per_stage_info(const config::Config& config) {
             mkb::STAGE_WORLD_THEMES[stage.stage_id] = stage.theme_id;
             s_bgm_id_lookup[stage.stage_id] = stage.music_id;
             s_time_limit_lookup[stage.stage_id] = stage.time_limit_frames;
+            if (stage.is_bonus_stage) {
+                s_is_bonus_stage_bitfield[stage.stage_id / 8] |= 1 << (stage.stage_id % 8);
+            }
         }
     }
 
@@ -143,18 +154,12 @@ static void write_common_per_stage_info(const config::Config& config) {
 
     PreallocBuffer name_prebuf;
 
-    // Use this for deduplicating the same stage name for the same ID
-    for (u32 i = 0; i < LEN(s_stage_name_offset_lookup); i++) {
-        s_stage_name_offset_lookup[i] = -1;
-    }
-
     // Prealloc first, then do it for real
     for (u32 i = 0; i < 2; i++) {
         for (u32 world = 0; world < config.story_layout.size; world++) {
             const auto& stage_infos = config.story_layout.elems[world];
             for (u32 world_stage = 0; world_stage < LEN(stage_infos); world_stage++) {
                 const auto& stage = stage_infos[world_stage];
-                if (s_stage_name_offset_lookup[stage.stage_id] != -1) continue;
                 s_stage_name_offset_lookup[stage.stage_id] = name_prebuf.write(stage.name);
             }
         }
@@ -163,7 +168,6 @@ static void write_common_per_stage_info(const config::Config& config) {
             const auto& course = config.cm_courses.elems[course_idx];
             for (u32 i = 0; i < course.size; i++) {
                 const auto& stage = course.elems[i];
-                if (s_stage_name_offset_lookup[stage.stage_id] != -1) continue;
                 s_stage_name_offset_lookup[stage.stage_id] = name_prebuf.write(stage.name);
             }
         }
@@ -193,8 +197,9 @@ void init_main_loop(const config::Config& config) {
 
     patch::hook_function(mkb::g_handle_world_bgm, g_handle_world_bgm_hook);
     patch::hook_function(mkb::get_storymode_stage_time_limit, get_storymode_stage_time_limit_hook);
+    patch::hook_function(mkb::is_bonus_stage, is_bonus_stage_hook);
 
-    write_common_per_stage_info(config);
+    write_stage_info_arrays(config);
     write_storymode_entries(config);
 }
 
