@@ -402,6 +402,7 @@ def main():
 
     cm_layout_dump = json.dumps(cm_layout, indent=4)
     annotated_cm_layout_dump = annotate_cm_layout_dump(cm_layout_dump)
+    print(annotated_cm_layout_dump)
 
     world_offsets = [
         0x0020b448,
@@ -428,7 +429,7 @@ def main():
 
     story_layout_dump = json.dumps(worlds, indent=4)
     annotated_story_layout_dump = annotate_story_layout_dump(story_layout_dump)
-    print(annotated_story_layout_dump)
+    # print(annotated_story_layout_dump)
 
 
 if __name__ == "__main__":
