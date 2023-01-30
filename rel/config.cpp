@@ -176,7 +176,6 @@ static void parse_stage_info(JsonObject stage_info, StageInfo& out_stage_info) {
     const char* name = parse_str_field(stage_info, "name");
     int theme_id = parse_int_field(stage_info, "theme_id");
     int music_id = parse_int_field(stage_info, "music_id");
-    // int music_id = 4;
     float time_limit = parse_float_field(stage_info, "time_limit");
 
     out_stage_info.stage_id = stage_id;
