@@ -50,6 +50,7 @@ struct Config {
     u16 party_game_bitfield;
     StoryLayout story_layout; 
     CmLayout cm_layout;
+    FixedArray<CmCourseLayout> cm_courses; // Convenient list of all courses
 };
 
 Config *parse();

@@ -49,7 +49,7 @@ static s16 s_stage_name_offset_lookup[STAGE_COUNT] = {};
 static char* s_stage_name_buffer;
 
 // Replication of vanilla function, but using our own theme lookup tables
-static void g_handle_world_bgm(u32 g_volume) {
+static void g_handle_world_bgm_hook(u32 g_volume) {
     mkb::BgmTrack bgm_id;
     short theme_id;
     int iVar2;
@@ -111,13 +111,12 @@ static void g_handle_world_bgm(u32 g_volume) {
     }
 }
 
-static int get_storymode_stage_time_limit(int world, int world_stage) {
+static int get_storymode_stage_time_limit_hook(int world, int world_stage) {
     int stage_id = mkb::sm_world_info[world].stages[world_stage].stage_id;
     return s_time_limit_lookup[stage_id];
 }
 
-static void write_common_per_stage_info(
-    const config::Config& config, const config::FixedArray<const config::CmCourseLayout>& layouts) {
+static void write_common_per_stage_info(const config::Config& config) {
     // Write theme IDs, music IDs, time limits
 
     for (u32 world = 0; world < config.story_layout.size; world++) {
@@ -130,8 +129,8 @@ static void write_common_per_stage_info(
         }
     }
 
-    for (u32 layout_idx = 0; layout_idx < layouts.size; layout_idx++) {
-        const auto& layout = layouts.elems[layout_idx];
+    for (u32 layout_idx = 0; layout_idx < config.cm_courses.size; layout_idx++) {
+        const auto& layout = config.cm_courses.elems[layout_idx];
         for (u32 i = 0; i < layout.size; i++) {
             const auto& stage = layout.elems[i];
             mkb::STAGE_WORLD_THEMES[stage.stage_id] = stage.theme_id;
@@ -160,10 +159,10 @@ static void write_common_per_stage_info(
             }
         }
 
-        for (u32 layout_idx = 0; layout_idx < layouts.size; layout_idx++) {
-            const auto& layout = layouts.elems[layout_idx];
-            for (u32 i = 0; i < layout.size; i++) {
-                const auto& stage = layout.elems[i];
+        for (u32 course_idx = 0; course_idx < config.cm_courses.size; course_idx++) {
+            const auto& course = config.cm_courses.elems[course_idx];
+            for (u32 i = 0; i < course.size; i++) {
+                const auto& stage = course.elems[i];
                 if (s_stage_name_offset_lookup[stage.stage_id] != -1) continue;
                 s_stage_name_offset_lookup[stage.stage_id] = name_prebuf.write(stage.name);
             }
@@ -190,19 +189,12 @@ void init_main_loop(const config::Config& config) {
     // TODO disable stgname machinery, hook into our own thing
     // TODO authors
     // TODO custom world count hook
+    // TODO challenge mode layout
 
-    patch::hook_function(mkb::g_handle_world_bgm, g_handle_world_bgm);
-    patch::hook_function(mkb::get_storymode_stage_time_limit, get_storymode_stage_time_limit);
+    patch::hook_function(mkb::g_handle_world_bgm, g_handle_world_bgm_hook);
+    patch::hook_function(mkb::get_storymode_stage_time_limit, get_storymode_stage_time_limit_hook);
 
-    const config::CmCourseLayout layouts_arr[] = {
-        config.cm_layout.beginner, config.cm_layout.beginner_extra,
-        config.cm_layout.advanced, config.cm_layout.advanced_extra,
-        config.cm_layout.expert,   config.cm_layout.expert_extra,
-        config.cm_layout.master,   config.cm_layout.master_extra,
-    };
-    const config::FixedArray<const config::CmCourseLayout> layouts{layouts_arr, LEN(layouts_arr)};
-
-    write_common_per_stage_info(config, layouts);
+    write_common_per_stage_info(config);
     write_storymode_entries(config);
 }
 

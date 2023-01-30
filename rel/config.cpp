@@ -164,6 +164,7 @@ static JsonArray parse_array_field(JsonObject parent, const char* field_name) {
 // Validate and parse stuff from loaded json config
 //
 
+static constexpr u16 STAGE_COUNT = 421;  // TODO put this in centralized place?
 static constexpr int STAGES_PER_WORLD = 10;
 
 static const char* party_game_names[] = {
@@ -232,6 +233,17 @@ static void parse_cm_layout(JsonObject root_obj, Config& out_config) {
     out_config.cm_layout.master_extra = parse_cm_course(layout_obj, "master_extra");
 
     s_parse_stack.pop();
+
+    CmCourseLayout courses_arr_stack[] = {
+        out_config.cm_layout.beginner, out_config.cm_layout.beginner_extra,
+        out_config.cm_layout.advanced, out_config.cm_layout.advanced_extra,
+        out_config.cm_layout.expert,   out_config.cm_layout.expert_extra,
+        out_config.cm_layout.master,   out_config.cm_layout.master_extra,
+    };
+    CmCourseLayout* courses_arr_heap =
+        static_cast<CmCourseLayout*>(heap::alloc(sizeof(courses_arr_stack)));
+    mkb::memcpy(courses_arr_heap, courses_arr_stack, sizeof(courses_arr_stack));
+    out_config.cm_courses = {.elems = courses_arr_heap, .size = LEN(courses_arr_stack)};
 }
 
 static void parse_patches(JsonObject root_obj) {
@@ -269,11 +281,10 @@ static void parse_story_layout(JsonObject root_obj, Config& out_config) {
     }
 
     // TODO allocate on parse heap
-    out_config.story_layout =
-        {
-            .elems = static_cast<WorldLayout*>(heap::alloc(sizeof(WorldLayout) * worlds_j.size())),
-            .size = worlds_j.size(),
-        };
+    out_config.story_layout = {
+        .elems = static_cast<WorldLayout*>(heap::alloc(sizeof(WorldLayout) * worlds_j.size())),
+        .size = worlds_j.size(),
+    };
 
     size_t world_idx = 0;
     for (JsonArray world_j : worlds_j) {
@@ -323,6 +334,58 @@ static void parse_party_game_toggles(JsonObject root_obj, Config& out_config) {
     s_parse_stack.pop();
 }
 
+static void take_new_stage(const StageInfo** stage_list, const StageInfo& new_stage) {
+    if (new_stage.stage_id < 0 || new_stage.stage_id >= STAGE_COUNT) {
+        log::abort("[wsmod] Error parsing config: invalid stage ID %d\n", new_stage.stage_id);
+    }
+    if (stage_list[new_stage.stage_id] == nullptr) {
+        stage_list[new_stage.stage_id] = &new_stage;
+    } else {
+        const StageInfo& old_stage = *stage_list[new_stage.stage_id];
+        const char* conflicting_field = nullptr;
+        if (mkb::strcmp(const_cast<char*>(old_stage.name), const_cast<char*>(new_stage.name)) !=
+            0) {
+            conflicting_field = "name";
+        } else if (old_stage.theme_id != new_stage.theme_id) {
+            conflicting_field = "theme_id";
+        } else if (old_stage.music_id != new_stage.music_id) {
+            conflicting_field = "music_id";
+        } else if (old_stage.time_limit_frames != new_stage.time_limit_frames) {
+            conflicting_field = "time_limit";
+        }
+
+        if (conflicting_field != nullptr) {
+            log::abort(
+                "[wsmod] Error parsing config: stage ID %d defined multiple times but with "
+                "different values of field \"%s\"\n",
+                new_stage.stage_id, conflicting_field);
+        }
+    }
+}
+
+static void check_conflicting_stage_info(const Config& config) {
+    const StageInfo** stage_list =
+        static_cast<const StageInfo**>(heap::alloc(sizeof(StageInfo* [STAGE_COUNT])));
+
+    for (u32 world = 0; world < config.story_layout.size; world++) {
+        const auto& stage_infos = config.story_layout.elems[world];
+        for (u32 world_stage = 0; world_stage < LEN(stage_infos); world_stage++) {
+            const auto& stage = stage_infos[world_stage];
+            take_new_stage(stage_list, stage);
+        }
+    }
+
+    for (u32 course_idx = 0; course_idx < config.cm_courses.size; course_idx++) {
+        const auto& course = config.cm_courses.elems[course_idx];
+        for (u32 i = 0; i < course.size; i++) {
+            const auto& stage = course.elems[i];
+            take_new_stage(stage_list, stage);
+        }
+    }
+
+    heap::free(stage_list);
+}
+
 Config* parse() {
     // ArduinoJson uses less memory given a mutable input
     char* json_text = static_cast<char*>(read_file("config.json"));
@@ -360,6 +423,7 @@ Config* parse() {
     if (custom_stage_info) {
         parse_story_layout(root_obj, *config);
         parse_cm_layout(root_obj, *config);
+        check_conflicting_stage_info(*config);
     }
 
     // Config and JSON text will get freed alongside the entire parse heap
