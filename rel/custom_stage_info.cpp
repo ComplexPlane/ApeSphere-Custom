@@ -10,36 +10,52 @@
 
 namespace custom_stage_info {
 
+// Append-only buffer that precomputes the allocation size.
+//
+// You first simulate writes to compute the size to allocate, then perform your writes again with
+// the newly-allocated space.
 class PreallocBuffer {
  public:
+    u32 write(const void* ptr, u32 size) {
+        if (m_buf != nullptr) {
+            MOD_ASSERT(m_buf_pos + size <= m_capacity);
+            mkb::memcpy(reinterpret_cast<void*>(reinterpret_cast<u32>(m_buf) + m_buf_pos),
+                        const_cast<void*>(ptr), size);
+        }
+        m_buf_pos += size;
+        return m_buf_pos;
+    }
+
     u32 write(const char* str) {
         u32 additional_size = mkb::strlen(const_cast<char*>(str)) + 1;
-        if (m_write_mode) {
-            MOD_ASSERT(m_buffer_pos + additional_size <= m_capacity);
-            mkb::memcpy(reinterpret_cast<void*>(reinterpret_cast<u32>(m_buf) + m_buffer_pos),
-                        const_cast<char*>(str), additional_size);
-        }
-        m_buffer_pos += additional_size;
-        return m_buffer_pos;
+        return write(str, additional_size);
     }
 
+    // Write to separately allocated buffer
+    void alloc(void* buf) {
+        // Idempotent
+        if (m_buf != nullptr) return;
+
+        m_buf = buf;
+        m_capacity = m_buf_pos;
+        m_buf_pos = 0;
+    }
+
+    // Write to heap allocated buffer
     void alloc() {
         // Idempotent
-        if (m_write_mode) return;
+        if (m_buf != nullptr) return;
 
-        m_write_mode = true;
-        m_capacity = m_buffer_pos;
-        m_buffer_pos = 0;
-        m_buf = heap::alloc(m_capacity);
+        alloc(heap::alloc(m_buf_pos));
     }
 
-    void* buf() { return m_buf; }
+    void* buf() const { return m_buf; }
+    u32 pos() const { return m_buf_pos; }
 
  private:
     void* m_buf = nullptr;
-    u32 m_buffer_pos = 0;
+    u32 m_buf_pos = 0;
     u32 m_capacity = 0;
-    bool m_write_mode = false;
 };
 
 static constexpr u32 div_power_2_round_up(u32 v, u32 div) {
@@ -189,11 +205,166 @@ static void write_storymode_entries(const config::Config& config) {
     }
 }
 
+// CourseCommand enums lifted from SMB1 decomp
+
+enum {
+    CMD_IF = 0,
+    CMD_THEN = 1,
+    CMD_FLOOR = 2,
+    CMD_COURSE_END = 3,
+};
+
+enum  // CMD_IF conditions
+{
+    IF_FLOOR_CLEAR = 0,
+    IF_GOAL_TYPE = 2,
+};
+
+enum  // CMD_THEN actions
+{
+    THEN_JUMP_FLOOR = 0,
+    THEN_FINISH_COURSE = 2,
+};
+
+enum  // CMD_FLOOR value types
+{
+    FLOOR_STAGE_ID = 0,
+    FLOOR_TIME = 1,
+};
+
+// Use our own type without implicit padding for convenience
+struct CourseCommand {
+    u8 opcode;
+    u8 type;
+    s32 value;
+    u8 filler8[0x1C - 0x8];  // unused filler?
+};
+static_assert(sizeof(CourseCommand) == sizeof(mkb::CourseCommand));
+
+static void do_course_write_pass(const config::CmCourseLayout& course, PreallocBuffer& buf) {
+    auto write_cmd = [&](const CourseCommand& cmd) { buf.write(&cmd, sizeof(cmd)); };
+
+    auto write_explicit_jump = [&](int goal_type, int jump_distance) {
+        write_cmd({CMD_IF, IF_FLOOR_CLEAR});
+        write_cmd({CMD_IF, IF_GOAL_TYPE, goal_type});
+        write_cmd({CMD_THEN, THEN_JUMP_FLOOR, jump_distance});
+    };
+
+    auto write_default_jump = [&](int jump_distance) {
+        write_cmd({CMD_IF, IF_FLOOR_CLEAR});
+        write_cmd({CMD_THEN, THEN_JUMP_FLOOR, jump_distance});
+    };
+
+    for (u32 stage_idx = 0; stage_idx < course.size; stage_idx++) {
+        const auto& stage = course.elems[stage_idx];
+
+        // Write stage ID
+        write_cmd({CMD_FLOOR, FLOOR_STAGE_ID, stage.stage_id});
+
+        // Write time limit
+        if (stage.time_limit_frames != 60 * 60) {
+            write_cmd({CMD_FLOOR, FLOOR_TIME, stage.time_limit_frames});
+        }
+
+        // Write goal conditions+actions
+
+        // Jump distances are irrelevant, just finish course
+        if (stage_idx == course.size - 1) {
+            write_cmd({CMD_IF, IF_FLOOR_CLEAR});
+            write_cmd({CMD_THEN, THEN_FINISH_COURSE});
+
+            // All jump distances are the same
+        } else if (stage.blue_goal_jump == stage.green_goal_jump &&
+                   stage.green_goal_jump == stage.red_goal_jump) {
+            write_default_jump(stage.blue_goal_jump);
+
+            // All jump distances differ
+        } else if (stage.blue_goal_jump != stage.green_goal_jump &&
+                   stage.blue_goal_jump != stage.red_goal_jump &&
+                   stage.green_goal_jump != stage.red_goal_jump) {
+            write_explicit_jump(0, stage.blue_goal_jump);
+            write_explicit_jump(1, stage.green_goal_jump);
+            write_explicit_jump(2, stage.red_goal_jump);
+
+            // Only blue jump differs
+        } else if (stage.green_goal_jump == stage.red_goal_jump) {
+            write_explicit_jump(0, stage.blue_goal_jump);
+            write_default_jump(stage.green_goal_jump);
+
+            // Only green jump differs
+        } else if (stage.blue_goal_jump == stage.red_goal_jump) {
+            write_explicit_jump(1, stage.green_goal_jump);
+            write_default_jump(stage.blue_goal_jump);
+
+            // Only red jump differs
+        } else {
+            write_explicit_jump(2, stage.red_goal_jump);
+            write_default_jump(stage.blue_goal_jump);
+        }
+    }
+
+    write_cmd({CMD_COURSE_END});
+}
+
+// Keeps track of how much of the vanilla game's course command space we've used. If we run out, we
+// must allocate course in wsmod's heap.
+//
+// TODO sort courses by length? Could sort by course stage count instead of course command list size
+// as a heuristic
+struct VanillaCmdBuffer {
+    void* ptr;
+    u32 pos;
+    u32 capacity;
+};
+
+static mkb::CourseCommand* write_cm_course(const config::CmCourseLayout& course,
+                                           VanillaCmdBuffer& vanilla_buf) {
+    PreallocBuffer buf;
+
+    do_course_write_pass(course, buf);
+    u32 course_size = buf.pos();
+    if (course_size > vanilla_buf.capacity - vanilla_buf.pos) {
+        // Allocate course in wsmod heap
+        buf.alloc();
+    } else {
+        // Allocate course in vanilla game's course region
+        buf.alloc(
+            reinterpret_cast<void*>(reinterpret_cast<u32>(vanilla_buf.ptr) + vanilla_buf.pos));
+        vanilla_buf.pos += course_size;
+    }
+    do_course_write_pass(course, buf);
+
+    return static_cast<mkb::CourseCommand*>(buf.buf());
+}
+
+static void write_cm_courses(const config::Config& config) {
+    VanillaCmdBuffer vanilla_buf = {
+        .ptr = mkb::beginner_noex_cm_entries,
+        .pos = 0,
+        .capacity = 0x3e3c,
+    };
+
+    mkb::cm_courses[0] = write_cm_course(config.cm_layout.beginner, vanilla_buf);
+    mkb::cm_courses[1] = write_cm_course(config.cm_layout.advanced, vanilla_buf);
+    mkb::cm_courses[2] = write_cm_course(config.cm_layout.expert, vanilla_buf);
+    mkb::cm_courses[3] = write_cm_course(config.cm_layout.beginner_extra, vanilla_buf);
+    mkb::cm_courses[4] = write_cm_course(config.cm_layout.advanced_extra, vanilla_buf);
+    mkb::cm_courses[5] = write_cm_course(config.cm_layout.expert_extra, vanilla_buf);
+    mkb::cm_courses[6] = write_cm_course(config.cm_layout.master, vanilla_buf);
+    mkb::cm_courses[7] = write_cm_course(config.cm_layout.master_extra, vanilla_buf);
+    mkb::cm_courses[8] = mkb::cm_courses[7];
+    // I don't know what these courses are but they might point to some unused course commands in
+    // vanilla
+    mkb::cm_courses[9] = mkb::cm_courses[0];
+    mkb::cm_courses[10] = mkb::cm_courses[0];
+    mkb::cm_courses[11] = mkb::cm_courses[0];
+}
+
 void init_main_loop(const config::Config& config) {
+    // TODO challenge mode layout
     // TODO disable stgname machinery, hook into our own thing
     // TODO authors
     // TODO custom world count hook
-    // TODO challenge mode layout
 
     patch::hook_function(mkb::g_handle_world_bgm, g_handle_world_bgm_hook);
     patch::hook_function(mkb::get_storymode_stage_time_limit, get_storymode_stage_time_limit_hook);
@@ -201,6 +372,7 @@ void init_main_loop(const config::Config& config) {
 
     write_stage_info_arrays(config);
     write_storymode_entries(config);
+    write_cm_courses(config);
 }
 
 }  // namespace custom_stage_info

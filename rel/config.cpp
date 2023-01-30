@@ -9,8 +9,8 @@
 #include "mathutils.h"
 #include "relpatches.h"
 
-// TODO
-// Parse to fixed-size heap at end of main heap to avoid fragmentation?
+// TODO parse heap
+// TODO JSON syntax error location
 
 namespace config {
 

@@ -68,31 +68,6 @@ enum { /* When we're in Master, current difficulty is still 0x2 */
 };
 typedef undefined4 Difficulty;
 
-typedef struct CmEntry CmEntry, *PCmEntry;
-
-enum { /* See cmEntryFormat.txt notes */
-    CMET_IF=0,
-    CMET_THEN=1,
-    CMET_INFO=2,
-    CMET_END=3
-};
-typedef undefined1 CmEntryType;
-
-typedef uchar u8;
-
-typedef uint uint32_t;
-
-typedef uint32_t u32;
-
-struct CmEntry { /* Challenge Mode Entry, see cmEntryFormat.txt by TwixNinja in notes for more info */
-    CmEntryType  type;
-    u8 arg;
-    undefined field2_0x2[2];
-    u32 value;
-    undefined field4_0x8[20];
-} __attribute__((__packed__));
-static_assert(sizeof(CmEntry) == 0x1c);
-
 enum {
     G_STORY_LEVEL_SELECT_NO_BACKGROUND=0,
     G_LAVA_NO_BACKGROUND=1,
@@ -340,6 +315,10 @@ static_assert(sizeof(GmaModel) == 0x40);
 typedef struct MenuScreen MenuScreen, *PMenuScreen;
 
 typedef struct MenuEntry MenuEntry, *PMenuEntry;
+
+typedef uint uint32_t;
+
+typedef uint32_t u32;
 
 enum {
     MODE_SELECT_MENU=0,
@@ -809,6 +788,8 @@ enum { /* I added DIP_NONE -Crafted */
 typedef undefined4 DipSwitch;
 
 typedef struct Replay Replay, *PReplay;
+
+typedef uchar u8;
 
 struct Replay { /* Unknown size atm */
     undefined field_0x0[0x4];
@@ -2037,6 +2018,25 @@ enum {
     STYLE_TEGAKI=5
 };
 typedef undefined1 FontStyle;
+
+typedef struct CourseCommand CourseCommand, *PCourseCommand;
+
+enum { /* See cmEntryFormat.txt notes */
+    COURSE_CMD_IF=0,
+    COURSE_CMD_THEN=1,
+    COURSE_CMD_INFO=2,
+    COURSE_CMD_END=3
+};
+typedef undefined1 CourseCommandOpcode;
+
+struct CourseCommand { /* Challenge Mode Entry, see cmEntryFormat.txt by TwixNinja or SMB1 decompilation for more info */
+    CourseCommandOpcode  opcode;
+    u8 type;
+    undefined field2_0x2[2];
+    s32 value;
+    undefined field4_0x8[20];
+} __attribute__((__packed__));
+static_assert(sizeof(CourseCommand) == 0x1c);
 
 typedef struct RelBufferInfo RelBufferInfo, *PRelBufferInfo;
 
@@ -5592,18 +5592,16 @@ extern "C" {
     extern undefined * switchdataD_803a0864;
     extern pointer cm_entry_if_funcs;
     extern pointer cm_entry_then_funcs;
-    extern struct CmEntry beginner_noex_cm_entries[31];
-    extern struct CmEntry advanced_noex_cm_entries[120];
-    extern struct CmEntry expert_noex_cm_entries[208];
-    extern struct CmEntry beginner_ex_cm_entries[35];
-    extern struct CmEntry advanced_ex_cm_entries[32];
-    extern struct CmEntry expert_ex_cm_entries[42];
-    extern struct CmEntry master_noex_cm_entries[35];
-    extern struct CmEntry master_ex_cm_entries[50];
-    extern struct CmEntry g_cm_entry_list9[16];
-    extern undefined * cm_courses;
-    extern pointer g_some_cm_entry_table2;
-    extern undefined * g_some_cm_entry_table3;
+    extern struct CourseCommand beginner_noex_cm_entries[31];
+    extern struct CourseCommand advanced_noex_cm_entries[120];
+    extern struct CourseCommand expert_noex_cm_entries[208];
+    extern struct CourseCommand beginner_ex_cm_entries[35];
+    extern struct CourseCommand advanced_ex_cm_entries[32];
+    extern struct CourseCommand expert_ex_cm_entries[42];
+    extern struct CourseCommand master_noex_cm_entries[35];
+    extern struct CourseCommand master_ex_cm_entries[50];
+    extern struct CourseCommand g_cm_entry_list9[16];
+    extern struct CourseCommand * cm_courses[12];
     extern struct SmStageInfo sm_stage_infos_world1[10];
     extern struct SmStageInfo sm_stage_infos_world2[10];
     extern struct SmStageInfo sm_stage_infos_world3[10];
@@ -5919,7 +5917,7 @@ extern "C" {
     extern s32 LOCALE_STGNAME_DVD_ENTRYNUMS[6];
     extern undefined4 g_current_stagename_dvd_entry_number;
     extern undefined4 stage_name_list_file_size;
-    extern undefined4 g_something_with_stgname4_maybe;
+    extern int stage_name_offsets[422];
     extern u8 g_some_32byte_lz_buffer[32];
     extern undefined4 g_some_replay_data4;
     extern undefined4 replay_frames_remaining;
@@ -5930,7 +5928,7 @@ extern "C" {
     extern struct Effect effects[512];
     extern Mtx g_related_to_texture_UV_map;
     extern undefined1 cm_unlock_entries[18];
-    extern struct CmEntry * current_cm_entry;
+    extern struct CourseCommand * current_cm_entry;
     extern int stage_jump_distance;
     extern BOOL32 in_practice_mode;
     extern undefined2 g_stage_id_in_practice_mode;
@@ -6114,6 +6112,8 @@ extern "C" {
     extern undefined * switchdataD_805437cc;
     extern undefined * switchdataD_80543840;
     extern undefined * switchdataD_80543868;
+    extern undefined4 scen_stgname_buffer;
+    extern undefined4 g_scen_stage_names_loaded;
     extern float some_ape_float;
     extern float some_ape_float2;
     extern undefined4 some_ape_float3;
@@ -8395,7 +8395,7 @@ extern "C" {
     void g_advance_stage_animation(void);
     void g_transform_some_itemgroup_vec(void);
     GmaModel * get_GmaBuffer_entry(struct GmaBuffer * buffer, char * name);
-    void g_something_with_stgname3(void);
+    void g_stgname_init(void);
     void init_itemgroups(void);
     void empty_function(void);
     void g_load_stage_2(u32 stage_id);
@@ -8433,10 +8433,12 @@ extern "C" {
     void g_init_shadows(void);
     void g_smth_with_viewstage_and_whs(void);
     int g_something_with_shadow_cast(void);
-    void g_something_with_stgname(int locale_index);
-    undefined4 g_read_stage_names_from_name_list_file(s32 stgname_dvd_entrynum);
+    void g_load_stgname_file(int locale_index);
+    undefined4 g_load_stgname_dvd_entrynum(s32 stgname_dvd_entrynum);
+    int g_get_storymode_stage_name_buf_size(void);
     bool g_queue_stage_name_load(void);
-    char * g_read_stage_name_from_file(int stage_id, char * stage_name_buf, int param_3);
+    undefined4 g_read_storymode_select_stage_names_from_dvd(int * param_1);
+    char * read_stage_name_from_dvd(int stage_id, char * out_stage_name, int out_stage_name_buf_size);
     void load_stage_models(void);
     void init_seesaws(void);
     void load_stagedef(u32 stage_id);
@@ -8778,12 +8780,12 @@ extern "C" {
     void event_course_init(void);
     void event_course_tick(void);
     void event_course_dest(void);
-    bool is_stage_complete(struct CmEntry * entry);
-    bool entered_goal_has_type(struct CmEntry * entry);
-    bool did_beat_stage_faster_than(struct CmEntry * entry);
-    void calc_stage_jump_distance(struct CmEntry * entry);
-    void clear_next_cm_stage_id2(struct CmEntry * entry);
-    void clear_next_cm_stage_id(struct CmEntry * entry);
+    bool is_stage_complete(struct CourseCommand * entry);
+    bool entered_goal_has_type(struct CourseCommand * entry);
+    bool did_beat_stage_faster_than(struct CourseCommand * entry);
+    void calc_stage_jump_distance(struct CourseCommand * entry);
+    void clear_next_cm_stage_id2(struct CourseCommand * entry);
+    void clear_next_cm_stage_id(struct CourseCommand * entry);
     s32 get_current_cm_stage_time_limit(void);
     u32 g_update_cm_course(Difficulty  difficulty, s32 course_stage_num, ModeFlag  mode_flags);
     int calc_course_idx(Difficulty  difficulty, ModeFlag  mode_flags);
@@ -8801,8 +8803,8 @@ extern "C" {
     void g_load_cm_unlock_entries(void);
     int get_world_stage_count(int world);
     int get_world_unbeaten_stage_count(int world);
-    int g_lookup_storymode_stage_id(int world_idx, int world_stage_idx);
-    int get_storymode_stage_difficulty(int world, int stage);
+    int get_story_mode_stage_id(int world_idx, int world_stage_idx);
+    int get_story_mode_stage_difficulty(int world, int stage);
     void clear_unlocked_storymode_stages(void);
     void g_save_storymode_unlock_entries(void);
     void g_load_storymode_unlock_entries(void);
@@ -8947,7 +8949,7 @@ extern "C" {
     void g_some_printf_function_3(double param_1, undefined8 param_2, undefined8 param_3, undefined8 param_4, undefined8 param_5, undefined8 param_6, undefined8 param_7, undefined8 param_8, char * param_9, undefined4 param_10, undefined4 param_11, undefined4 param_12, undefined4 param_13, undefined4 param_14, undefined4 param_15, undefined4 param_16);
     void g_get_string_sprite_width_2(byte * param_1);
     void g_call_call_smth_with_fonts_chara_load_w_defaults(byte * param_1);
-    void g_call_get_string_sprite_width(byte * string);
+    float g_call_get_string_sprite_width(char * str);
     void g_smth_with_screen_fading(void);
     void fade_screen_to_color(uint flags, u32 color, uint frames);
     undefined4 draw_sprite_draw_request(struct SpriteDrawRequest * request);
@@ -8958,9 +8960,9 @@ extern "C" {
     void g_smth_with_sprite_draw_request(struct SpriteDrawRequest * request);
     int g_get_tex_id(undefined4 param_1, ushort param_2, ushort * param_3, int param_4);
     void g_smth_with_font_drawing(byte * string);
-    double g_smth_with_fonts_chara_load(byte * string, int param_2, char param_3);
+    float g_smth_with_fonts_chara_load(byte * string, int param_2, char param_3);
     void g_call_smth_with_fonts_chara_load_w_defaults(byte * string);
-    double g_get_string_sprite_width(byte * string);
+    float g_get_string_sprite_width(char * string);
     void g_display_playpoint_or_gift_message_child(int param_1, int param_2, int * param_3);
     void g_smth_with_playpoint_or_gift_msg(int param_1, char * param_2);
     void g_some_printf_function_4(undefined8 param_1, undefined8 param_2, undefined8 param_3, undefined8 param_4, undefined8 param_5, undefined8 param_6, undefined8 param_7, undefined8 param_8, int param_9, char * param_10, undefined4 param_11, undefined4 param_12, undefined4 param_13, undefined4 param_14, undefined4 param_15, undefined4 param_16);
@@ -9470,13 +9472,15 @@ extern "C" {
     void g_some_storymode_mode_func(void);
     StoryModeSaveFile * get_current_storymode_save_file(void);
     void g_some_scenario_init_func_4(void);
-    void g_something_freeing_something_from_main_heap(void);
+    void g_free_scen_stage_name_buffer(void);
     void empty_function(void);
     void empty_function(void);
     void g_create_storymode_select_sprites(uint param_1);
     void g_related_to_loading_story_stageselect(uint param_1);
     void g_draw_ape_storymode_select_screen(int param_1);
     void empty_function(void);
+    void sprite_scen_stagesel_stage_name_tick(undefined4 param_1, int param_2);
+    void sprite_scen_stagesel_stage_name_disp(struct Sprite * sprite);
     void g_preload_all_story_preview_images(void);
     void g_draw_now_loading_text(void);
     uint g_get_storymode_next_world(void);

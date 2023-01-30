@@ -4580,7 +4580,7 @@
 802C6654:g_advance_stage_animation
 802C6AC8:g_transform_some_itemgroup_vec
 802C6B64:get_GmaBuffer_entry
-802C6BE8:g_something_with_stgname3
+802C6BE8:g_stgname_init
 802C6C98:init_itemgroups
 802C6DF0:empty_function
 802C6DF4:g_load_stage_2
@@ -4648,12 +4648,12 @@
 802CC66C:FUN_801f6434
 802CC7E4:FUN_801f65ac
 802CCC34:FUN_801f69fc
-802CCD20:g_something_with_stgname
-802CCDD0:g_read_stage_names_from_name_list_file
-802CCF04:FUN_801f6ccc
+802CCD20:g_load_stgname_file
+802CCDD0:g_load_stgname_dvd_entrynum
+802CCF04:g_get_storymode_stage_name_buf_size
 802CCF20:g_queue_stage_name_load
-802CCF4C:FUN_801f6d14
-802CD028:g_read_stage_name_from_file
+802CCF4C:g_read_storymode_select_stage_names_from_dvd
+802CD028:read_stage_name_from_dvd
 802CD128:FUN_801f6ef0
 802CD170:load_stage_models
 802CD8CC:FUN_801f7694
@@ -5416,8 +5416,8 @@
 80314E10:get_world_stage_count
 80314E28:get_world_unbeaten_stage_count
 80314E80:FUN_8023ec48
-80314EF0:g_lookup_storymode_stage_id
-80314F10:get_storymode_stage_difficulty
+80314EF0:get_story_mode_stage_id
+80314F10:get_story_mode_stage_difficulty
 80314F34:FUN_8023ecfc
 80314F7C:FUN_8023ed44
 80314FEC:FUN_8023edb4
@@ -8602,7 +8602,7 @@
 805BDAF0:LOCALE_STGNAME_DVD_ENTRYNUMS
 805BDB08:g_current_stagename_dvd_entry_number
 805BDB0C:stage_name_list_file_size
-805BDB10:g_something_with_stgname4_maybe
+805BDB10:stage_name_offsets
 805BE1C0:g_some_32byte_lz_buffer
 805BE1E4:g_some_replay_data4
 805BE7B8:replay_frames_remaining
@@ -8875,7 +8875,7 @@
 808FE914:g_some_storymode_mode_func
 808FE9AC:get_current_storymode_save_file
 808FE9D0:g_some_scenario_init_func_4
-808FEA34:g_something_freeing_something_from_main_heap
+808FEA34:g_free_scen_stage_name_buffer
 808FEAA4:empty_function
 808FEAA8:FUN_804d6a30
 808FEAD8:empty_function
@@ -8912,8 +8912,8 @@
 80900A68:caseD_0
 80900A68:caseD_7
 80900A70:FUN_804d89f8
-80900BF8:FUN_804d8b80
-80900D3C:FUN_804d8cc4
+80900BF8:sprite_scen_stagesel_stage_name_tick
+80900D3C:sprite_scen_stagesel_stage_name_disp
 8090107C:FUN_804d9004
 80901080:FUN_804d9008
 809013F8:FUN_804d9380
@@ -9281,6 +9281,8 @@
 8096B848:switchdataD_805437cc
 8096B8BC:switchdataD_80543840
 8096B8E4:switchdataD_80543868
+8097F4F0:scen_stgname_buffer
+8097F4F4:g_scen_stage_names_loaded
 8097F50C:some_ape_float
 8097F510:some_ape_float2
 8097F534:some_ape_float3
