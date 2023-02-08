@@ -362,6 +362,7 @@ static void write_cm_courses(const config::Config& config) {
 
 void init_main_loop(const config::Config& config) {
     // TODO challenge mode layout
+    // TODO challenge mode unlock bitfield optimization
     // TODO disable stgname machinery, hook into our own thing
     // TODO authors
     // TODO custom world count hook
