@@ -1,9 +1,19 @@
 #include "config.h"
 
+#include <mkb.h>
+
+// Allow // comments
 #define ARDUINOJSON_ENABLE_COMMENTS 1
+// Don't use C++ stdlib headers please
+#define ARDUINOJSON_ENABLE_STD_STREAM 0
+#define ARDUINOJSON_ENABLE_STD_STRING 0
+#define ARDUINOJSON_ENABLE_STRING_VIEW 0
+// Fake stdlib decls so the default allocator compiles. I can't even include <cstdlib> I think
+void *malloc(u32 size);
+void free(void *ptr);
+void *realloc(void *ptr, u32 new_size);
 #include <ArduinoJson/ArduinoJson.h>
 
-#include <mkb.h>
 #include "heap.h"
 #include "log.h"
 #include "mathutils.h"
