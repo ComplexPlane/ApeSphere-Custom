@@ -31,15 +31,6 @@ void story_mode_music_hook();
 void reflection_draw_stage_hook();
 void reflection_view_stage_hook();
 
-// music_id_per_stage
-extern u16 bgm_id_lookup[relpatches::STAGE_COUNT];
-void get_bgm_id_hook();
-
-// theme_id_per_stage
-extern u16 theme_id_lookup[relpatches::STAGE_COUNT];
-void get_theme_id_hook_1();
-void get_theme_id_hook_2();
-
 // story_mode_char_select
 void get_monkey_id_hook();
 

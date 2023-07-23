@@ -1,0 +1,2502 @@
+{
+    // Patches are enabled with "true" and disabled with "false"
+    "patches": {
+        // Enable specifying stage names, theme IDs, music IDs, time limits, story/challenge mode
+        // layouts etc. in the "story_mode_layout" and "challenge_mode_layout" sections. If you're
+        // making a custom level pack, you probably want to enable this.
+        "custom_stage_info": false,
+
+        // When the number of bananas remaining on a stage that is marked as a bonus
+        // stage hits zero, the stage is completed with a 'Perfect' pop-up and voice
+        // line, identical to SMB1.
+        "perfect_bonus_completion": false,
+
+        // Removes the heat haze on levels in theme ID 7 (sand).
+        // Indirectly fixes the widescreen issue with heat haze.
+        "remove_desert_haze": false,
+
+        // Prevents the world music from being interrupted by the stage select music
+        // in Story Mode.
+        "story_mode_music_fix": false,
+
+        // Prevents the music volume from being lowered when the game is paused.
+        "no_music_vol_decrease_on_pause": false,
+
+        // Allows the player to select between the four playable monkeys in Story Mode.
+        "story_mode_char_select": false,
+
+        // Stops the 'hurry up' music from playing.
+        "no_hurry_up_music": false,
+
+        // Removes hardcoded elements from Revolution's level slot.
+        "fix_revolution_slot": false,
+
+        // Fixes the lower-angle camera hardcoded to Labyrinth's level slot.
+        "fix_labyrinth_camera": false,
+
+        // Challenge mode has infinite lives, and the life counter is converted into
+        // a counter that tracks the number of deaths.
+        "challenge_mode_death_count": false,
+
+        // Disables the tutorial/ranking sequence that shows up when the player goes
+        // idle at the title screen.
+        "disable_how_to_play_screen": false,
+
+        // Fixes an issue where wormhole surfaces do not appear on stage IDs 130
+        // through 180, and stage ID 199.
+        "fix_wormhole_surfaces": false,
+
+        // Fixes an issue where goal posts would not reflect properly, and makes any
+        // stage object with the effect bitflag 0x4 reflect in a reflective stage object.
+        "fix_stage_object_reflection": false,
+
+        // Allows for arbitrarily many mirror planes on a stage, rendering the mirror plane
+        // from the origin of the reflective object nearest to the player. Also applies the
+        // item group/collision header transformation to the mirror plane, allowing for
+        // reflective objects to be animated.
+        "enhance_reflective_surfaces": false,
+
+        // Skips the AV logo and intro movie sequence on game start, immediately
+        // skipping to the title screen.
+        "skip_intro_movie": false,
+
+        // Allows for the SMB1 camera to be toggled with the Z button mid-game.
+        "smb1_camera_toggle": false,
+
+        // Replaces the misplaced 't' letter in the story mode data entry screen with
+        // the correct letter, a lowercase 'w'.
+        "fix_missing_w": false,
+
+        // Skips the cutscenes in story mode.
+        "skip_cutscenes": false,
+
+        // Removes the playpoint screen upon returning from story or challenge mode,
+        // and unlocks all party games.
+        "remove_playpoints": false,
+
+        // Fixes an issue with the storm theme where rain droplet splashes would not appear
+        // correctly on the continue platform.
+        "fix_storm_continue_platform": false,
+
+        // Fixes an issue where skipping more than two or three stages in story mode with the
+        // any% skip glitch would lead to the game crashing. Please note that this allows for
+        // up to 99 skips to be performed.
+        "fix_any_percent_crash": false,
+
+        // Permanently enables or disables party games based off the Party Game Toggles
+        // list.
+        "party_game_toggle": false,
+
+        // Allows for the stages that appear in the background of the menu, stages 3 and 201,
+        // to have mirrors in the background. This is experimental and may cause issues.
+        "enable_menu_reflections": false,
+
+        // Stage objects (stobjs) like party balls and goaltapes may show up incorrectly
+        // or not at all if they reside on an itemgroup whose index is >127. This patch
+        // increases the limit to 256 total itemgroups.
+        "stobj_draw_fix": false
+    },
+
+    // Toggles which party games are accessible from the party game menu.
+    // Disabled party games cannot be unlocked or accessed.
+    // Requires the patch 'party_game_toggle' to be enabled.
+    "party_game_toggles": {
+        "race": false,
+        "fight": false,
+        "target": false,
+        "billiards": false,
+        "bowling": false,
+        "golf": false,
+        "boat": false,
+        "shot": false,
+        "dogfight": false,
+        "soccer": false,
+        "baseball": false,
+        "tennis": false
+    },
+
+    // Defines the stages in Story Mode. Requires the "custom_stage_info" patch to be enabled.
+    // You may specify less than 10 worlds, but you must currently have exactly 10 stages per world.
+    "story_mode_layout": [
+        [ // World 1
+            { // Stage 1-1
+                "stage_id": 201,
+                "name": "SIMPLE",
+                "theme_id": 19,
+                "music_id": 7,
+                "time_limit": 60.00,
+                "difficulty": 1
+            },
+            { // Stage 1-2
+                "stage_id": 202,
+                "name": "HOLLOW",
+                "theme_id": 19,
+                "music_id": 7,
+                "time_limit": 60.00,
+                "difficulty": 2
+            },
+            { // Stage 1-3
+                "stage_id": 203,
+                "name": "BUMPY",
+                "theme_id": 19,
+                "music_id": 7,
+                "time_limit": 60.00,
+                "difficulty": 1
+            },
+            { // Stage 1-4
+                "stage_id": 204,
+                "name": "SWITCHES",
+                "theme_id": 19,
+                "music_id": 7,
+                "time_limit": 60.00,
+                "difficulty": 2
+            },
+            { // Stage 1-5
+                "stage_id": 1,
+                "name": "CONVEYERS",
+                "theme_id": 19,
+                "music_id": 7,
+                "time_limit": 60.00,
+                "difficulty": 6
+            },
+            { // Stage 1-6
+                "stage_id": 2,
+                "name": "FLOATERS",
+                "theme_id": 19,
+                "music_id": 7,
+                "time_limit": 60.00,
+                "difficulty": 3
+            },
+            { // Stage 1-7
+                "stage_id": 3,
+                "name": "SLOPES",
+                "theme_id": 19,
+                "music_id": 7,
+                "time_limit": 60.00,
+                "difficulty": 2
+            },
+            { // Stage 1-8
+                "stage_id": 4,
+                "name": "SLIDERS",
+                "theme_id": 19,
+                "music_id": 7,
+                "time_limit": 60.00,
+                "difficulty": 8
+            },
+            { // Stage 1-9
+                "stage_id": 5,
+                "name": "SPINNING TOP",
+                "theme_id": 19,
+                "music_id": 7,
+                "time_limit": 60.00,
+                "difficulty": 6
+            },
+            { // Stage 1-10
+                "stage_id": 6,
+                "name": "CURVE BRIDGE",
+                "theme_id": 19,
+                "music_id": 7,
+                "time_limit": 60.00,
+                "difficulty": 2
+            }
+        ],
+        [ // World 2
+            { // Stage 2-1
+                "stage_id": 7,
+                "name": "BANKS",
+                "theme_id": 17,
+                "music_id": 1,
+                "time_limit": 60.00,
+                "difficulty": 2
+            },
+            { // Stage 2-2
+                "stage_id": 8,
+                "name": "EATEN FLOOR",
+                "theme_id": 17,
+                "music_id": 1,
+                "time_limit": 60.00,
+                "difficulty": 5
+            },
+            { // Stage 2-3
+                "stage_id": 9,
+                "name": "HOPPERS",
+                "theme_id": 17,
+                "music_id": 1,
+                "time_limit": 60.00,
+                "difficulty": 3
+            },
+            { // Stage 2-4
+                "stage_id": 10,
+                "name": "COASTER",
+                "theme_id": 17,
+                "music_id": 1,
+                "time_limit": 60.00,
+                "difficulty": 6
+            },
+            { // Stage 2-5
+                "stage_id": 11,
+                "name": "BUMPY CHECK",
+                "theme_id": 17,
+                "music_id": 1,
+                "time_limit": 60.00,
+                "difficulty": 7
+            },
+            { // Stage 2-6
+                "stage_id": 12,
+                "name": "SWELL",
+                "theme_id": 17,
+                "music_id": 1,
+                "time_limit": 60.00,
+                "difficulty": 3
+            },
+            { // Stage 2-7
+                "stage_id": 13,
+                "name": "GRAVITY SLIDER",
+                "theme_id": 17,
+                "music_id": 1,
+                "time_limit": 60.00,
+                "difficulty": 7
+            },
+            { // Stage 2-8
+                "stage_id": 14,
+                "name": "INCHWORMS",
+                "theme_id": 17,
+                "music_id": 1,
+                "time_limit": 60.00,
+                "difficulty": 6
+            },
+            { // Stage 2-9
+                "stage_id": 15,
+                "name": "TOTALITARIANISM",
+                "theme_id": 17,
+                "music_id": 1,
+                "time_limit": 60.00,
+                "difficulty": 8
+            },
+            { // Stage 2-10
+                "stage_id": 16,
+                "name": "ALTERNATIVE",
+                "theme_id": 17,
+                "music_id": 1,
+                "time_limit": 60.00,
+                "difficulty": 6
+            }
+        ],
+        [ // World 3
+            { // Stage 3-1
+                "stage_id": 231,
+                "name": "ORGANIC FORM",
+                "theme_id": 18,
+                "music_id": 4,
+                "time_limit": 60.00,
+                "difficulty": 3
+            },
+            { // Stage 3-2
+                "stage_id": 232,
+                "name": "REVERSIBLE GEAR",
+                "theme_id": 18,
+                "music_id": 4,
+                "time_limit": 60.00,
+                "difficulty": 8
+            },
+            { // Stage 3-3
+                "stage_id": 233,
+                "name": "STEPPING STONES",
+                "theme_id": 18,
+                "music_id": 4,
+                "time_limit": 60.00,
+                "difficulty": 6
+            },
+            { // Stage 3-4
+                "stage_id": 234,
+                "name": "DRIBBLES",
+                "theme_id": 18,
+                "music_id": 4,
+                "time_limit": 60.00,
+                "difficulty": 6
+            },
+            { // Stage 3-5
+                "stage_id": 235,
+                "name": "U.R.L.",
+                "theme_id": 18,
+                "music_id": 4,
+                "time_limit": 60.00,
+                "difficulty": 4
+            },
+            { // Stage 3-6
+                "stage_id": 236,
+                "name": "MAD RINGS",
+                "theme_id": 18,
+                "music_id": 4,
+                "time_limit": 60.00,
+                "difficulty": 3
+            },
+            { // Stage 3-7
+                "stage_id": 237,
+                "name": "CURVY OPTIONS",
+                "theme_id": 18,
+                "music_id": 4,
+                "time_limit": 60.00,
+                "difficulty": 3
+            },
+            { // Stage 3-8
+                "stage_id": 238,
+                "name": "TWISTER",
+                "theme_id": 18,
+                "music_id": 4,
+                "time_limit": 60.00,
+                "difficulty": 8
+            },
+            { // Stage 3-9
+                "stage_id": 239,
+                "name": "DOWNHILL",
+                "theme_id": 18,
+                "music_id": 4,
+                "time_limit": 60.00,
+                "difficulty": 3
+            },
+            { // Stage 3-10
+                "stage_id": 17,
+                "name": "JUNCTION",
+                "theme_id": 18,
+                "music_id": 4,
+                "time_limit": 60.00,
+                "difficulty": 3
+            }
+        ],
+        [ // World 4
+            { // Stage 4-1
+                "stage_id": 18,
+                "name": "PRO SKATERS",
+                "theme_id": 32,
+                "music_id": 64,
+                "time_limit": 60.00,
+                "difficulty": 2
+            },
+            { // Stage 4-2
+                "stage_id": 19,
+                "name": "GIANT COMB",
+                "theme_id": 32,
+                "music_id": 64,
+                "time_limit": 60.00,
+                "difficulty": 8
+            },
+            { // Stage 4-3
+                "stage_id": 20,
+                "name": "BEEHIVE",
+                "theme_id": 32,
+                "music_id": 64,
+                "time_limit": 60.00,
+                "difficulty": 5
+            },
+            { // Stage 4-4
+                "stage_id": 21,
+                "name": "DYNAMIC MAZE",
+                "theme_id": 32,
+                "music_id": 64,
+                "time_limit": 60.00,
+                "difficulty": 1
+            },
+            { // Stage 4-5
+                "stage_id": 22,
+                "name": "TRIANGLE HOLES",
+                "theme_id": 32,
+                "music_id": 64,
+                "time_limit": 60.00,
+                "difficulty": 6
+            },
+            { // Stage 4-6
+                "stage_id": 23,
+                "name": "LAUNCHERS",
+                "theme_id": 32,
+                "music_id": 64,
+                "time_limit": 60.00,
+                "difficulty": 9
+            },
+            { // Stage 4-7
+                "stage_id": 24,
+                "name": "RANDOMIZER",
+                "theme_id": 32,
+                "music_id": 64,
+                "time_limit": 60.00,
+                "difficulty": 6
+            },
+            { // Stage 4-8
+                "stage_id": 25,
+                "name": "COIN SLOTS",
+                "theme_id": 32,
+                "music_id": 64,
+                "time_limit": 60.00,
+                "difficulty": 8
+            },
+            { // Stage 4-9
+                "stage_id": 26,
+                "name": "SEESAW BRIDGES",
+                "theme_id": 32,
+                "music_id": 64,
+                "time_limit": 60.00,
+                "difficulty": 8
+            },
+            { // Stage 4-10
+                "stage_id": 27,
+                "name": "ARTHROPOD",
+                "theme_id": 32,
+                "music_id": 64,
+                "time_limit": 60.00,
+                "difficulty": 10
+            }
+        ],
+        [ // World 5
+            { // Stage 5-1
+                "stage_id": 28,
+                "name": "WORMHOLE",
+                "theme_id": 20,
+                "music_id": 61,
+                "time_limit": 60.00,
+                "difficulty": 3
+            },
+            { // Stage 5-2
+                "stage_id": 29,
+                "name": "FREE FALL",
+                "theme_id": 20,
+                "music_id": 61,
+                "time_limit": 60.00,
+                "difficulty": 7
+            },
+            { // Stage 5-3
+                "stage_id": 30,
+                "name": "MELTING POT",
+                "theme_id": 20,
+                "music_id": 61,
+                "time_limit": 30.00,
+                "difficulty": 4
+            },
+            { // Stage 5-4
+                "stage_id": 31,
+                "name": "MAD SHUFFLE",
+                "theme_id": 20,
+                "music_id": 61,
+                "time_limit": 60.00,
+                "difficulty": 8
+            },
+            { // Stage 5-5
+                "stage_id": 32,
+                "name": "BEAD SCREEN",
+                "theme_id": 20,
+                "music_id": 61,
+                "time_limit": 60.00,
+                "difficulty": 3
+            },
+            { // Stage 5-6
+                "stage_id": 33,
+                "name": "JUMP MACHINE",
+                "theme_id": 20,
+                "music_id": 61,
+                "time_limit": 60.00,
+                "difficulty": 5
+            },
+            { // Stage 5-7
+                "stage_id": 34,
+                "name": "ZIGZAG SLOPE",
+                "theme_id": 20,
+                "music_id": 61,
+                "time_limit": 60.00,
+                "difficulty": 2
+            },
+            { // Stage 5-8
+                "stage_id": 35,
+                "name": "TOWER",
+                "theme_id": 20,
+                "music_id": 61,
+                "time_limit": 60.00,
+                "difficulty": 6
+            },
+            { // Stage 5-9
+                "stage_id": 36,
+                "name": "TOGGLE",
+                "theme_id": 20,
+                "music_id": 61,
+                "time_limit": 60.00,
+                "difficulty": 10
+            },
+            { // Stage 5-10
+                "stage_id": 37,
+                "name": "FLUCTUATION",
+                "theme_id": 20,
+                "music_id": 61,
+                "time_limit": 60.00,
+                "difficulty": 4
+            }
+        ],
+        [ // World 6
+            { // Stage 6-1
+                "stage_id": 38,
+                "name": "COMBINATION",
+                "theme_id": 21,
+                "music_id": 6,
+                "time_limit": 60.00,
+                "difficulty": 8
+            },
+            { // Stage 6-2
+                "stage_id": 39,
+                "name": "PUNCHED SEESAWS",
+                "theme_id": 21,
+                "music_id": 6,
+                "time_limit": 60.00,
+                "difficulty": 8
+            },
+            { // Stage 6-3
+                "stage_id": 40,
+                "name": "OPERA",
+                "theme_id": 21,
+                "music_id": 6,
+                "time_limit": 60.00,
+                "difficulty": 5
+            },
+            { // Stage 6-4
+                "stage_id": 41,
+                "name": "BRANDISHED",
+                "theme_id": 21,
+                "music_id": 6,
+                "time_limit": 60.00,
+                "difficulty": 5
+            },
+            { // Stage 6-5
+                "stage_id": 42,
+                "name": "TIERS",
+                "theme_id": 21,
+                "music_id": 6,
+                "time_limit": 60.00,
+                "difficulty": 5
+            },
+            { // Stage 6-6
+                "stage_id": 43,
+                "name": "CLIFFS",
+                "theme_id": 21,
+                "music_id": 6,
+                "time_limit": 60.00,
+                "difficulty": 9
+            },
+            { // Stage 6-7
+                "stage_id": 44,
+                "name": "NARROW PEAKS",
+                "theme_id": 21,
+                "music_id": 6,
+                "time_limit": 60.00,
+                "difficulty": 9
+            },
+            { // Stage 6-8
+                "stage_id": 45,
+                "name": "DETOUR",
+                "theme_id": 21,
+                "music_id": 6,
+                "time_limit": 60.00,
+                "difficulty": 5
+            },
+            { // Stage 6-9
+                "stage_id": 46,
+                "name": "SWITCH INFERNO",
+                "theme_id": 21,
+                "music_id": 6,
+                "time_limit": 60.00,
+                "difficulty": 9
+            },
+            { // Stage 6-10
+                "stage_id": 47,
+                "name": "FOLDERS",
+                "theme_id": 21,
+                "music_id": 6,
+                "time_limit": 60.00,
+                "difficulty": 2
+            }
+        ],
+        [ // World 7
+            { // Stage 7-1
+                "stage_id": 281,
+                "name": "SPIRAL BRIDGE",
+                "theme_id": 25,
+                "music_id": 63,
+                "time_limit": 60.00,
+                "difficulty": 4
+            },
+            { // Stage 7-2
+                "stage_id": 282,
+                "name": "WAVY OPTION",
+                "theme_id": 25,
+                "music_id": 63,
+                "time_limit": 60.00,
+                "difficulty": 5
+            },
+            { // Stage 7-3
+                "stage_id": 283,
+                "name": "OBSTACLE",
+                "theme_id": 25,
+                "music_id": 63,
+                "time_limit": 60.00,
+                "difficulty": 7
+            },
+            { // Stage 7-4
+                "stage_id": 284,
+                "name": "DOMINO",
+                "theme_id": 25,
+                "music_id": 63,
+                "time_limit": 60.00,
+                "difficulty": 6
+            },
+            { // Stage 7-5
+                "stage_id": 285,
+                "name": "SIEVE",
+                "theme_id": 25,
+                "music_id": 63,
+                "time_limit": 60.00,
+                "difficulty": 4
+            },
+            { // Stage 7-6
+                "stage_id": 286,
+                "name": "FLOCK",
+                "theme_id": 25,
+                "music_id": 63,
+                "time_limit": 60.00,
+                "difficulty": 8
+            },
+            { // Stage 7-7
+                "stage_id": 287,
+                "name": "DOUBLE SPIRAL",
+                "theme_id": 25,
+                "music_id": 63,
+                "time_limit": 60.00,
+                "difficulty": 9
+            },
+            { // Stage 7-8
+                "stage_id": 288,
+                "name": "HIERARCHY",
+                "theme_id": 25,
+                "music_id": 63,
+                "time_limit": 60.00,
+                "difficulty": 9
+            },
+            { // Stage 7-9
+                "stage_id": 289,
+                "name": "8 BRACELETS",
+                "theme_id": 25,
+                "music_id": 63,
+                "time_limit": 60.00,
+                "difficulty": 10
+            },
+            { // Stage 7-10
+                "stage_id": 48,
+                "name": "QUICK TURN",
+                "theme_id": 25,
+                "music_id": 63,
+                "time_limit": 60.00,
+                "difficulty": 5
+            }
+        ],
+        [ // World 8
+            { // Stage 8-1
+                "stage_id": 49,
+                "name": "PISTONS",
+                "theme_id": 24,
+                "music_id": 70,
+                "time_limit": 60.00,
+                "difficulty": 9
+            },
+            { // Stage 8-2
+                "stage_id": 50,
+                "name": "SOFT CREAM",
+                "theme_id": 24,
+                "music_id": 70,
+                "time_limit": 60.00,
+                "difficulty": 8
+            },
+            { // Stage 8-3
+                "stage_id": 51,
+                "name": "MOMENTUM",
+                "theme_id": 24,
+                "music_id": 70,
+                "time_limit": 60.00,
+                "difficulty": 10
+            },
+            { // Stage 8-4
+                "stage_id": 52,
+                "name": "ENTANGLED PATH",
+                "theme_id": 24,
+                "music_id": 70,
+                "time_limit": 60.00,
+                "difficulty": 9
+            },
+            { // Stage 8-5
+                "stage_id": 53,
+                "name": "TOTTERS",
+                "theme_id": 24,
+                "music_id": 70,
+                "time_limit": 60.00,
+                "difficulty": 8
+            },
+            { // Stage 8-6
+                "stage_id": 54,
+                "name": "VORTEX",
+                "theme_id": 24,
+                "music_id": 70,
+                "time_limit": 60.00,
+                "difficulty": 9
+            },
+            { // Stage 8-7
+                "stage_id": 55,
+                "name": "WARP",
+                "theme_id": 24,
+                "music_id": 70,
+                "time_limit": 60.00,
+                "difficulty": 10
+            },
+            { // Stage 8-8
+                "stage_id": 56,
+                "name": "TRAMPOLINES",
+                "theme_id": 24,
+                "music_id": 70,
+                "time_limit": 60.00,
+                "difficulty": 10
+            },
+            { // Stage 8-9
+                "stage_id": 57,
+                "name": "SWING SHAFT",
+                "theme_id": 24,
+                "music_id": 70,
+                "time_limit": 60.00,
+                "difficulty": 6
+            },
+            { // Stage 8-10
+                "stage_id": 58,
+                "name": "LINEAR SEESAWS",
+                "theme_id": 24,
+                "music_id": 70,
+                "time_limit": 60.00,
+                "difficulty": 7
+            }
+        ],
+        [ // World 9
+            { // Stage 9-1
+                "stage_id": 59,
+                "name": "SERIAL JUMP",
+                "theme_id": 22,
+                "music_id": 16,
+                "time_limit": 60.00,
+                "difficulty": 10
+            },
+            { // Stage 9-2
+                "stage_id": 60,
+                "name": "CROSS FLOORS",
+                "theme_id": 22,
+                "music_id": 16,
+                "time_limit": 60.00,
+                "difficulty": 10
+            },
+            { // Stage 9-3
+                "stage_id": 61,
+                "name": "SPINNING SAW",
+                "theme_id": 22,
+                "music_id": 16,
+                "time_limit": 60.00,
+                "difficulty": 8
+            },
+            { // Stage 9-4
+                "stage_id": 62,
+                "name": "CHIPPED PIPES",
+                "theme_id": 22,
+                "music_id": 16,
+                "time_limit": 60.00,
+                "difficulty": 9
+            },
+            { // Stage 9-5
+                "stage_id": 63,
+                "name": "FLAT MAZE",
+                "theme_id": 22,
+                "music_id": 16,
+                "time_limit": 60.00,
+                "difficulty": 10
+            },
+            { // Stage 9-6
+                "stage_id": 64,
+                "name": "GUILLOTINE",
+                "theme_id": 22,
+                "music_id": 16,
+                "time_limit": 60.00,
+                "difficulty": 7
+            },
+            { // Stage 9-7
+                "stage_id": 65,
+                "name": "CORK SCREW",
+                "theme_id": 22,
+                "music_id": 16,
+                "time_limit": 60.00,
+                "difficulty": 8
+            },
+            { // Stage 9-8
+                "stage_id": 66,
+                "name": "ORBITERS",
+                "theme_id": 22,
+                "music_id": 16,
+                "time_limit": 60.00,
+                "difficulty": 8
+            },
+            { // Stage 9-9
+                "stage_id": 67,
+                "name": "TWIN BASIN",
+                "theme_id": 22,
+                "music_id": 16,
+                "time_limit": 60.00,
+                "difficulty": 6
+            },
+            { // Stage 9-10
+                "stage_id": 68,
+                "name": "AIR HOCKEY",
+                "theme_id": 22,
+                "music_id": 16,
+                "time_limit": 60.00,
+                "difficulty": 10
+            }
+        ],
+        [ // World 10
+            { // Stage 10-1
+                "stage_id": 341,
+                "name": "TRAINING",
+                "theme_id": 23,
+                "music_id": 58,
+                "time_limit": 60.00,
+                "difficulty": 8
+            },
+            { // Stage 10-2
+                "stage_id": 342,
+                "name": "GIMMICK",
+                "theme_id": 23,
+                "music_id": 58,
+                "time_limit": 60.00,
+                "difficulty": 9
+            },
+            { // Stage 10-3
+                "stage_id": 343,
+                "name": "MOUNTAIN",
+                "theme_id": 23,
+                "music_id": 58,
+                "time_limit": 60.00,
+                "difficulty": 9
+            },
+            { // Stage 10-4
+                "stage_id": 344,
+                "name": "DISORDER",
+                "theme_id": 23,
+                "music_id": 58,
+                "time_limit": 60.00,
+                "difficulty": 9
+            },
+            { // Stage 10-5
+                "stage_id": 345,
+                "name": "3D MAZE",
+                "theme_id": 23,
+                "music_id": 58,
+                "time_limit": 60.00,
+                "difficulty": 8
+            },
+            { // Stage 10-6
+                "stage_id": 346,
+                "name": "LABYRINTH",
+                "theme_id": 23,
+                "music_id": 58,
+                "time_limit": 60.00,
+                "difficulty": 9
+            },
+            { // Stage 10-7
+                "stage_id": 347,
+                "name": "POSTMODERN",
+                "theme_id": 23,
+                "music_id": 58,
+                "time_limit": 60.00,
+                "difficulty": 7
+            },
+            { // Stage 10-8
+                "stage_id": 348,
+                "name": "REVOLUTION",
+                "theme_id": 23,
+                "music_id": 58,
+                "time_limit": 60.00,
+                "difficulty": 8
+            },
+            { // Stage 10-9
+                "stage_id": 349,
+                "name": "INVISIBLE",
+                "theme_id": 23,
+                "music_id": 58,
+                "time_limit": 60.00,
+                "difficulty": 9
+            },
+            { // Stage 10-10
+                "stage_id": 350,
+                "name": "CREATED BY",
+                "theme_id": 23,
+                "music_id": 58,
+                "time_limit": 60.00,
+                "difficulty": 6
+            }
+        ]
+    ],
+
+    // Defines the stages in Challenge Mode. Requires the "custom_stage_info" patch to be enabled.
+    "challenge_mode_layout": {
+        "beginner": [
+            { // Beginner 1
+                "stage_id": 201,
+                "name": "SIMPLE",
+                "theme_id": 19,
+                "music_id": 7,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Beginner 2
+                "stage_id": 202,
+                "name": "HOLLOW",
+                "theme_id": 19,
+                "music_id": 7,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Beginner 3
+                "stage_id": 203,
+                "name": "BUMPY",
+                "theme_id": 19,
+                "music_id": 7,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Beginner 4
+                "stage_id": 204,
+                "name": "SWITCHES",
+                "theme_id": 19,
+                "music_id": 7,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Beginner 5
+                "stage_id": 205,
+                "name": "BOWL",
+                "theme_id": 26,
+                "music_id": 42,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": true
+            },
+            { // Beginner 6
+                "stage_id": 206,
+                "name": "FLOATERS",
+                "theme_id": 20,
+                "music_id": 61,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Beginner 7
+                "stage_id": 207,
+                "name": "SLOPES",
+                "theme_id": 20,
+                "music_id": 61,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Beginner 8
+                "stage_id": 208,
+                "name": "SLIDERS",
+                "theme_id": 20,
+                "music_id": 61,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Beginner 9
+                "stage_id": 209,
+                "name": "SPINNING TOP",
+                "theme_id": 20,
+                "music_id": 61,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Beginner 10
+                "stage_id": 210,
+                "name": "CURVE BRIDGE",
+                "theme_id": 20,
+                "music_id": 61,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            }
+        ],
+        "beginner_extra": [
+            { // Beginner Extra 1
+                "stage_id": 211,
+                "name": "CONVEYERS",
+                "theme_id": 22,
+                "music_id": 16,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Beginner Extra 2
+                "stage_id": 212,
+                "name": "BUMPY CHECK",
+                "theme_id": 22,
+                "music_id": 16,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Beginner Extra 3
+                "stage_id": 213,
+                "name": "ALTERNATIVE",
+                "theme_id": 22,
+                "music_id": 16,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Beginner Extra 4
+                "stage_id": 214,
+                "name": "JUNCTION",
+                "theme_id": 22,
+                "music_id": 16,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 2,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Beginner Extra 5
+                "stage_id": 215,
+                "name": "BEAD SCREEN",
+                "theme_id": 22,
+                "music_id": 16,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Beginner Extra 6
+                "stage_id": 216,
+                "name": "FLUCTUATION",
+                "theme_id": 23,
+                "music_id": 58,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Beginner Extra 7
+                "stage_id": 217,
+                "name": "FOLDERS",
+                "theme_id": 23,
+                "music_id": 58,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Beginner Extra 8
+                "stage_id": 218,
+                "name": "QUICK TURN",
+                "theme_id": 23,
+                "music_id": 58,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Beginner Extra 9
+                "stage_id": 219,
+                "name": "LINEAR SEESAWS",
+                "theme_id": 23,
+                "music_id": 58,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Beginner Extra 10
+                "stage_id": 220,
+                "name": "BIRTH",
+                "theme_id": 23,
+                "music_id": 58,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            }
+        ],
+        "advanced": [
+            { // Advanced 1
+                "stage_id": 221,
+                "name": "BANKS",
+                "theme_id": 19,
+                "music_id": 7,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Advanced 2
+                "stage_id": 222,
+                "name": "EATEN FLOOR",
+                "theme_id": 19,
+                "music_id": 7,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Advanced 3
+                "stage_id": 223,
+                "name": "HOPPERS",
+                "theme_id": 19,
+                "music_id": 7,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Advanced 4
+                "stage_id": 224,
+                "name": "COASTER",
+                "theme_id": 19,
+                "music_id": 7,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Advanced 5
+                "stage_id": 225,
+                "name": "BOARD PARK",
+                "theme_id": 26,
+                "music_id": 42,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": true
+            },
+            { // Advanced 6
+                "stage_id": 226,
+                "name": "SWELL",
+                "theme_id": 20,
+                "music_id": 61,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Advanced 7
+                "stage_id": 227,
+                "name": "GRAVITY SLIDER",
+                "theme_id": 20,
+                "music_id": 61,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Advanced 8
+                "stage_id": 228,
+                "name": "INCHWORMS",
+                "theme_id": 20,
+                "music_id": 61,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 2,
+                "red_goal_jump": 3,
+                "is_bonus_stage": false
+            },
+            { // Advanced 9
+                "stage_id": 229,
+                "name": "TOTALITARIANISM",
+                "theme_id": 20,
+                "music_id": 61,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Advanced 10
+                "stage_id": 230,
+                "name": "LEVELER",
+                "theme_id": 26,
+                "music_id": 42,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": true
+            },
+            { // Advanced 11
+                "stage_id": 231,
+                "name": "ORGANIC FORM",
+                "theme_id": 18,
+                "music_id": 4,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Advanced 12
+                "stage_id": 232,
+                "name": "REVERSIBLE GEAR",
+                "theme_id": 18,
+                "music_id": 4,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Advanced 13
+                "stage_id": 233,
+                "name": "STEPPING STONES",
+                "theme_id": 18,
+                "music_id": 4,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Advanced 14
+                "stage_id": 234,
+                "name": "DRIBBLES",
+                "theme_id": 18,
+                "music_id": 4,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Advanced 15
+                "stage_id": 235,
+                "name": "U.R.L.",
+                "theme_id": 18,
+                "music_id": 4,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Advanced 16
+                "stage_id": 236,
+                "name": "MAD RINGS",
+                "theme_id": 18,
+                "music_id": 4,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 2,
+                "red_goal_jump": 3,
+                "is_bonus_stage": false
+            },
+            { // Advanced 17
+                "stage_id": 237,
+                "name": "CURVY OPTIONS",
+                "theme_id": 18,
+                "music_id": 4,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Advanced 18
+                "stage_id": 238,
+                "name": "TWISTER",
+                "theme_id": 18,
+                "music_id": 4,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Advanced 19
+                "stage_id": 239,
+                "name": "DOWNHILL",
+                "theme_id": 18,
+                "music_id": 4,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Advanced 20
+                "stage_id": 240,
+                "name": "RAMPAGE",
+                "theme_id": 26,
+                "music_id": 42,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": true
+            },
+            { // Advanced 21
+                "stage_id": 241,
+                "name": "PRO SKATERS",
+                "theme_id": 21,
+                "music_id": 6,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 2,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Advanced 22
+                "stage_id": 242,
+                "name": "GIANT COMB",
+                "theme_id": 21,
+                "music_id": 6,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Advanced 23
+                "stage_id": 243,
+                "name": "BEEHIVE",
+                "theme_id": 21,
+                "music_id": 6,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Advanced 24
+                "stage_id": 244,
+                "name": "DYNAMIC MAZE",
+                "theme_id": 21,
+                "music_id": 6,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Advanced 25
+                "stage_id": 245,
+                "name": "TRIANGLE HOLES",
+                "theme_id": 21,
+                "music_id": 6,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Advanced 26
+                "stage_id": 246,
+                "name": "LAUNCHERS",
+                "theme_id": 21,
+                "music_id": 6,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 2,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Advanced 27
+                "stage_id": 247,
+                "name": "RANDOMIZER",
+                "theme_id": 21,
+                "music_id": 6,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 2,
+                "red_goal_jump": 3,
+                "is_bonus_stage": false
+            },
+            { // Advanced 28
+                "stage_id": 248,
+                "name": "COIN SLOTS",
+                "theme_id": 21,
+                "music_id": 6,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Advanced 29
+                "stage_id": 249,
+                "name": "SEESAW BRIDGES",
+                "theme_id": 21,
+                "music_id": 6,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Advanced 30
+                "stage_id": 250,
+                "name": "ARTHROPOD",
+                "theme_id": 21,
+                "music_id": 6,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            }
+        ],
+        "advanced_extra": [
+            { // Advanced Extra 1
+                "stage_id": 251,
+                "name": "AUTO DOORS",
+                "theme_id": 22,
+                "music_id": 16,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Advanced Extra 2
+                "stage_id": 252,
+                "name": "HEAVY SPHERE",
+                "theme_id": 22,
+                "music_id": 16,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Advanced Extra 3
+                "stage_id": 253,
+                "name": "STAGGER",
+                "theme_id": 22,
+                "music_id": 16,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Advanced Extra 4
+                "stage_id": 254,
+                "name": "U.F.O.",
+                "theme_id": 22,
+                "music_id": 16,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Advanced Extra 5
+                "stage_id": 255,
+                "name": "RING BRIDGES",
+                "theme_id": 22,
+                "music_id": 16,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Advanced Extra 6
+                "stage_id": 256,
+                "name": "DOMES",
+                "theme_id": 23,
+                "music_id": 58,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Advanced Extra 7
+                "stage_id": 257,
+                "name": "AMIDA LOT",
+                "theme_id": 23,
+                "music_id": 58,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Advanced Extra 8
+                "stage_id": 258,
+                "name": "LONG SLIDER",
+                "theme_id": 23,
+                "music_id": 58,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Advanced Extra 9
+                "stage_id": 259,
+                "name": "GRID BRIDGE",
+                "theme_id": 23,
+                "music_id": 58,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Advanced Extra 10
+                "stage_id": 260,
+                "name": "TEAPOT",
+                "theme_id": 23,
+                "music_id": 58,
+                "time_limit": 30.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            }
+        ],
+        "expert": [
+            { // Expert 1
+                "stage_id": 261,
+                "name": "WORMHOLE",
+                "theme_id": 19,
+                "music_id": 7,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert 2
+                "stage_id": 262,
+                "name": "FREE FALL",
+                "theme_id": 19,
+                "music_id": 7,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 2,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert 3
+                "stage_id": 263,
+                "name": "MELTING POT",
+                "theme_id": 19,
+                "music_id": 7,
+                "time_limit": 30.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert 4
+                "stage_id": 264,
+                "name": "MAD SHUFFLE",
+                "theme_id": 19,
+                "music_id": 7,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert 5
+                "stage_id": 265,
+                "name": "PARTITION",
+                "theme_id": 26,
+                "music_id": 42,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": true
+            },
+            { // Expert 6
+                "stage_id": 266,
+                "name": "JUMP MACHINE",
+                "theme_id": 21,
+                "music_id": 6,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 2,
+                "red_goal_jump": 3,
+                "is_bonus_stage": false
+            },
+            { // Expert 7
+                "stage_id": 267,
+                "name": "ZIGZAG SLOPE",
+                "theme_id": 21,
+                "music_id": 6,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert 8
+                "stage_id": 268,
+                "name": "TOWER",
+                "theme_id": 21,
+                "music_id": 6,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert 9
+                "stage_id": 269,
+                "name": "TOGGLE",
+                "theme_id": 21,
+                "music_id": 6,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert 10
+                "stage_id": 270,
+                "name": "PACHINKO",
+                "theme_id": 26,
+                "music_id": 42,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": true
+            },
+            { // Expert 11
+                "stage_id": 271,
+                "name": "COMBINATION",
+                "theme_id": 24,
+                "music_id": 70,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert 12
+                "stage_id": 272,
+                "name": "PUNCHED SEESAWS",
+                "theme_id": 24,
+                "music_id": 70,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 2,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert 13
+                "stage_id": 273,
+                "name": "OPERA",
+                "theme_id": 24,
+                "music_id": 70,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert 14
+                "stage_id": 274,
+                "name": "BRANDISHED",
+                "theme_id": 24,
+                "music_id": 70,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert 15
+                "stage_id": 275,
+                "name": "TIERS",
+                "theme_id": 24,
+                "music_id": 70,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 2,
+                "red_goal_jump": 3,
+                "is_bonus_stage": false
+            },
+            { // Expert 16
+                "stage_id": 276,
+                "name": "CLIFFS",
+                "theme_id": 24,
+                "music_id": 70,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert 17
+                "stage_id": 277,
+                "name": "NARROW PEAKS",
+                "theme_id": 24,
+                "music_id": 70,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert 18
+                "stage_id": 278,
+                "name": "DETOUR",
+                "theme_id": 24,
+                "music_id": 70,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 2,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert 19
+                "stage_id": 279,
+                "name": "SWITCH INFERNO",
+                "theme_id": 24,
+                "music_id": 70,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert 20
+                "stage_id": 280,
+                "name": "EARTHQUAKE",
+                "theme_id": 26,
+                "music_id": 42,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": true
+            },
+            { // Expert 21
+                "stage_id": 281,
+                "name": "SPIRAL BRIDGE",
+                "theme_id": 25,
+                "music_id": 63,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert 22
+                "stage_id": 282,
+                "name": "WAVY OPTION",
+                "theme_id": 25,
+                "music_id": 63,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert 23
+                "stage_id": 283,
+                "name": "OBSTACLE",
+                "theme_id": 25,
+                "music_id": 63,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert 24
+                "stage_id": 284,
+                "name": "DOMINO",
+                "theme_id": 25,
+                "music_id": 63,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert 25
+                "stage_id": 285,
+                "name": "SIEVE",
+                "theme_id": 25,
+                "music_id": 63,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert 26
+                "stage_id": 286,
+                "name": "FLOCK",
+                "theme_id": 25,
+                "music_id": 63,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert 27
+                "stage_id": 287,
+                "name": "DOUBLE SPIRAL",
+                "theme_id": 25,
+                "music_id": 63,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert 28
+                "stage_id": 288,
+                "name": "HIERARCHY",
+                "theme_id": 25,
+                "music_id": 63,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert 29
+                "stage_id": 289,
+                "name": "8 BRACELETS",
+                "theme_id": 25,
+                "music_id": 63,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 2,
+                "red_goal_jump": 3,
+                "is_bonus_stage": false
+            },
+            { // Expert 30
+                "stage_id": 290,
+                "name": "BANANA HUNTING",
+                "theme_id": 26,
+                "music_id": 42,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": true
+            },
+            { // Expert 31
+                "stage_id": 291,
+                "name": "PISTONS",
+                "theme_id": 17,
+                "music_id": 1,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert 32
+                "stage_id": 292,
+                "name": "SOFT CREAM",
+                "theme_id": 17,
+                "music_id": 1,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert 33
+                "stage_id": 293,
+                "name": "MOMENTUM",
+                "theme_id": 17,
+                "music_id": 1,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert 34
+                "stage_id": 294,
+                "name": "ENTANGLED PATH",
+                "theme_id": 17,
+                "music_id": 1,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 2,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert 35
+                "stage_id": 295,
+                "name": "TOTTERS",
+                "theme_id": 17,
+                "music_id": 1,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert 36
+                "stage_id": 296,
+                "name": "VORTEX",
+                "theme_id": 17,
+                "music_id": 1,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 2,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert 37
+                "stage_id": 297,
+                "name": "WARP",
+                "theme_id": 17,
+                "music_id": 1,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 2,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert 38
+                "stage_id": 298,
+                "name": "TRAMPOLINES",
+                "theme_id": 17,
+                "music_id": 1,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert 39
+                "stage_id": 299,
+                "name": "SWING SHAFT",
+                "theme_id": 17,
+                "music_id": 1,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert 40
+                "stage_id": 300,
+                "name": "FIGHTERS",
+                "theme_id": 26,
+                "music_id": 42,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": true
+            },
+            { // Expert 41
+                "stage_id": 301,
+                "name": "SERIAL JUMP",
+                "theme_id": 32,
+                "music_id": 64,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 2,
+                "red_goal_jump": 3,
+                "is_bonus_stage": false
+            },
+            { // Expert 42
+                "stage_id": 302,
+                "name": "CROSS FLOORS",
+                "theme_id": 32,
+                "music_id": 64,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert 43
+                "stage_id": 303,
+                "name": "SPINNING SAW",
+                "theme_id": 32,
+                "music_id": 64,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert 44
+                "stage_id": 304,
+                "name": "CHIPPED PIPES",
+                "theme_id": 32,
+                "music_id": 64,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 2,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert 45
+                "stage_id": 305,
+                "name": "FLAT MAZE",
+                "theme_id": 32,
+                "music_id": 64,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert 46
+                "stage_id": 306,
+                "name": "GUILLOTINE",
+                "theme_id": 32,
+                "music_id": 64,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert 47
+                "stage_id": 307,
+                "name": "CORK SCREW",
+                "theme_id": 32,
+                "music_id": 64,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert 48
+                "stage_id": 308,
+                "name": "ORBITERS",
+                "theme_id": 32,
+                "music_id": 64,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert 49
+                "stage_id": 309,
+                "name": "TWIN BASIN",
+                "theme_id": 32,
+                "music_id": 64,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert 50
+                "stage_id": 310,
+                "name": "AIR HOCKEY",
+                "theme_id": 32,
+                "music_id": 64,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            }
+        ],
+        "expert_extra": [
+            { // Expert Extra 1
+                "stage_id": 311,
+                "name": "CHARGE",
+                "theme_id": 22,
+                "music_id": 16,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert Extra 2
+                "stage_id": 312,
+                "name": "STRATA",
+                "theme_id": 22,
+                "music_id": 16,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 2,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert Extra 3
+                "stage_id": 313,
+                "name": "PUZZLE",
+                "theme_id": 22,
+                "music_id": 16,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert Extra 4
+                "stage_id": 314,
+                "name": "GIANT SWING",
+                "theme_id": 22,
+                "music_id": 16,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert Extra 5
+                "stage_id": 315,
+                "name": "5 DRUMS",
+                "theme_id": 22,
+                "music_id": 16,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert Extra 6
+                "stage_id": 316,
+                "name": "FREE THROW",
+                "theme_id": 22,
+                "music_id": 16,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 2,
+                "red_goal_jump": 3,
+                "is_bonus_stage": false
+            },
+            { // Expert Extra 7
+                "stage_id": 317,
+                "name": "PENDULUMS",
+                "theme_id": 22,
+                "music_id": 16,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert Extra 8
+                "stage_id": 318,
+                "name": "CONICAL SLIDER",
+                "theme_id": 22,
+                "music_id": 16,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert Extra 9
+                "stage_id": 319,
+                "name": "CONSTRUCTION",
+                "theme_id": 22,
+                "music_id": 16,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Expert Extra 10
+                "stage_id": 320,
+                "name": "TRAIN WORM",
+                "theme_id": 22,
+                "music_id": 16,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            }
+        ],
+        "master": [
+            { // Master 1
+                "stage_id": 321,
+                "name": "CENTRIFUGAL",
+                "theme_id": 22,
+                "music_id": 16,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Master 2
+                "stage_id": 322,
+                "name": "SWING BRIDGES",
+                "theme_id": 22,
+                "music_id": 16,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 2,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Master 3
+                "stage_id": 323,
+                "name": "CYLINDERS",
+                "theme_id": 22,
+                "music_id": 16,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Master 4
+                "stage_id": 324,
+                "name": "PASSAGE",
+                "theme_id": 22,
+                "music_id": 16,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Master 5
+                "stage_id": 325,
+                "name": "NOTCH",
+                "theme_id": 22,
+                "music_id": 16,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Master 6
+                "stage_id": 326,
+                "name": "INTERMITTENT",
+                "theme_id": 23,
+                "music_id": 58,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Master 7
+                "stage_id": 327,
+                "name": "LONG TORUS",
+                "theme_id": 23,
+                "music_id": 58,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Master 8
+                "stage_id": 328,
+                "name": "SPASMODIC",
+                "theme_id": 23,
+                "music_id": 58,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Master 9
+                "stage_id": 329,
+                "name": "DOUBLE TWIN",
+                "theme_id": 23,
+                "music_id": 58,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Master 10
+                "stage_id": 330,
+                "name": "CLOCK FACE",
+                "theme_id": 23,
+                "music_id": 58,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            }
+        ],
+        "master_extra": [
+            { // Master Extra 1
+                "stage_id": 331,
+                "name": "VARIABLE WIDTH",
+                "theme_id": 23,
+                "music_id": 58,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Master Extra 2
+                "stage_id": 332,
+                "name": "STRIKER",
+                "theme_id": 23,
+                "music_id": 58,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 2,
+                "red_goal_jump": 3,
+                "is_bonus_stage": false
+            },
+            { // Master Extra 3
+                "stage_id": 333,
+                "name": "OOPARTS",
+                "theme_id": 23,
+                "music_id": 58,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Master Extra 4
+                "stage_id": 334,
+                "name": "PLANETS",
+                "theme_id": 23,
+                "music_id": 58,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 3,
+                "is_bonus_stage": false
+            },
+            { // Master Extra 5
+                "stage_id": 335,
+                "name": "SLICED CHEESE",
+                "theme_id": 23,
+                "music_id": 58,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Master Extra 6
+                "stage_id": 336,
+                "name": "8 SEESAWS",
+                "theme_id": 23,
+                "music_id": 58,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Master Extra 7
+                "stage_id": 337,
+                "name": "SYNCHRONIZED",
+                "theme_id": 23,
+                "music_id": 58,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 2,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Master Extra 8
+                "stage_id": 338,
+                "name": "HELIX",
+                "theme_id": 23,
+                "music_id": 58,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 2,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Master Extra 9
+                "stage_id": 339,
+                "name": "DIZZY SYSTEM",
+                "theme_id": 23,
+                "music_id": 58,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            },
+            { // Master Extra 10
+                "stage_id": 340,
+                "name": "NINTENDO",
+                "theme_id": 23,
+                "music_id": 58,
+                "time_limit": 60.00,
+                "blue_goal_jump": 1,
+                "green_goal_jump": 1,
+                "red_goal_jump": 1,
+                "is_bonus_stage": false
+            }
+        ]
+    }
+}

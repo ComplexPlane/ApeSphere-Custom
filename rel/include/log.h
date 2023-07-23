@@ -2,25 +2,23 @@
 
 #include <mkb.h>
 
-// These seem terribly hacky, maybe a better replacement could be made in the future
-// Maybe we could even show a custom crash screen!
+namespace log {
 
-#define MOD_ASSERT(exp) \
-({ \
-    if (!(exp)) \
-    { \
-        mkb::OSPanic(__FILE__, __LINE__, "Failed assertion " #exp); \
-        mkb::OSReport("[wsmod] Failed assertion in %s line %d: %s\n", __FILE__, __LINE__, #exp); \
-        while (true); \
-    } \
-})
+// To save space and because it just makes more sense, we differentiate
+// user-facing error messages from assertion failures meant for developers.
+//
+// abort() is for user-caused errors, with clear error messages to help resolve
+// the problem.
+//
+// MOD_ASSERT() includes line/col number of assertion failure but not a message,
+// which is more appropriate for a developer.
 
-#define MOD_ASSERT_MSG(exp, msg) \
-({ \
-    if (!(exp)) \
-    { \
-        mkb::OSPanic(__FILE__, __LINE__, msg); \
-        mkb::OSReport("[wsmod] Failed assertion in %s line %d: %s\n", __FILE__, __LINE__, (msg)); \
-        while (true); \
-    } \
-})
+void mod_assert(const char *file, s32 line, bool exp);
+
+[[noreturn]] void abort();
+[[noreturn]] void abort(const char *format, ...);
+
+} // namespace log
+
+// Factor as much out of the macro as possible to save space
+#define MOD_ASSERT(exp) (log::mod_assert(__FILE__, __LINE__, (exp)))

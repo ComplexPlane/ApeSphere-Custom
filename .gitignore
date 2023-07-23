@@ -288,3 +288,5 @@ __pycache__/
 /compile_commands.json
 /ApeSphere.*
 /.qtc_clangd
+
+.cache/

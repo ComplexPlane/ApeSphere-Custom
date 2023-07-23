@@ -46,7 +46,15 @@ void init()
     perform_assembly_patches();
 
     // Load our config file
-    config::parse_config();
+    config::Config *config = config::parse();
+
+    // Run all patch main_loop_init() funcs
+    for (unsigned int i = 0; i < relpatches::PATCH_COUNT; i++) {
+        if (relpatches::patches[i].enabled && relpatches::patches[i].main_loop_init_func != nullptr) {
+            relpatches::patches[i].main_loop_init_func(*config);
+        }
+    }
+    // TODO free parse heap
 
     patch::hook_function(s_draw_debugtext_tramp, mkb::draw_debugtext, []()
         {
@@ -56,7 +64,7 @@ void init()
 
             // Disp functions (REL patches)
             for (unsigned int i = 0; i < relpatches::PATCH_COUNT; i++) {
-                if (relpatches::patches[i].status && relpatches::patches[i].disp_func != nullptr) {
+                if (relpatches::patches[i].enabled && relpatches::patches[i].disp_func != nullptr) {
                     relpatches::patches[i].disp_func();
                 }
             }
@@ -74,7 +82,7 @@ void init()
 
             // Tick functions (REL patches)
             for (unsigned int i = 0; i < relpatches::PATCH_COUNT; i++) {
-                if (relpatches::patches[i].status && relpatches::patches[i].tick_func != nullptr) {
+                if (relpatches::patches[i].enabled && relpatches::patches[i].tick_func != nullptr) {
                     relpatches::patches[i].tick_func();
                 }
             }
@@ -91,7 +99,7 @@ void init()
             // Main game init functions
             if (STREQ(rel_filepath, "mkb2.main_game.rel")) {
                 for (unsigned int i = 0; i < relpatches::PATCH_COUNT; i++) {
-                    if (relpatches::patches[i].status && relpatches::patches[i].main_game_init_func != nullptr) {
+                    if (relpatches::patches[i].enabled && relpatches::patches[i].main_game_init_func != nullptr) {
                         relpatches::patches[i].main_game_init_func();
                     }
                 }
@@ -100,7 +108,7 @@ void init()
             // Sel_ngc init functions
             else if (STREQ(rel_filepath, "mkb2.sel_ngc.rel")) {
                 for (unsigned int i = 0; i < relpatches::PATCH_COUNT; i++) {
-                    if (relpatches::patches[i].status && relpatches::patches[i].sel_ngc_init_func != nullptr) {
+                    if (relpatches::patches[i].enabled && relpatches::patches[i].sel_ngc_init_func != nullptr) {
                         relpatches::patches[i].sel_ngc_init_func();
                     }
                 }
