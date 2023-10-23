@@ -3,6 +3,7 @@
 #include "internal/assembly.h"
 #include "internal/patch.h"
 #include "internal/tickable.h"
+#include "internal/relutil.h"
 #include "utils/ppcutil.h"
 
 namespace custom_music_id {
@@ -15,7 +16,7 @@ TICKABLE_DEFINITION((
 // Hooks into g_handle_world_bgm, modifies the variable for BGM ID to point to
 // the one in our stage ID ->
 void init_main_loop() {
-    patch::write_branch_bl(reinterpret_cast<void*>(0x802a5f08), reinterpret_cast<void*>(main::get_bgm_id_hook));
+    patch::write_branch_bl(relutil::relocate_addr(0x802a5f08), reinterpret_cast<void*>(main::get_bgm_id_hook));
 }
 
 }// namespace custom_music_id

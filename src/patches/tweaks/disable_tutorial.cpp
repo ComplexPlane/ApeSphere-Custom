@@ -14,7 +14,7 @@ TICKABLE_DEFINITION((
 // Nops the sub_mode_frame_counter decrement in smd_adv_title_tick.
 // This ensures the tutorial sequence will never start.
 void init_main_loop() {
-    patch::write_nop(reinterpret_cast<void*>(0x8027bbb0));
+    patch::write_nop(relutil::relocate_addr(0x8027bbb0));
 }
 
 }// namespace disable_tutorial

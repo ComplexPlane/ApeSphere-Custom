@@ -3,6 +3,7 @@
 #include "internal/assembly.h"
 #include "internal/patch.h"
 #include "internal/tickable.h"
+#include "internal/relutil.h"
 #include "utils/ppcutil.h"
 
 namespace custom_theme_id {
@@ -15,8 +16,8 @@ TICKABLE_DEFINITION((
 // Hooks into two functions that set the global world_theme variable
 // Not entirely sure what the second one is for, but it may be used for SMB1 themes
 void init_main_loop() {
-    patch::write_branch(reinterpret_cast<void*>(0x802c7c3c), reinterpret_cast<void*>(main::get_theme_id_hook_1));
-    patch::write_branch(reinterpret_cast<void*>(0x802c7cc8), reinterpret_cast<void*>(main::get_theme_id_hook_2));
+    patch::write_branch(relutil::relocate_addr(0x802c7c3c), reinterpret_cast<void*>(main::get_theme_id_hook_1));
+    patch::write_branch(relutil::relocate_addr(0x802c7cc8), reinterpret_cast<void*>(main::get_theme_id_hook_2));
 }
 
 }// namespace custom_theme_id

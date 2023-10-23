@@ -12,7 +12,7 @@ TICKABLE_DEFINITION((
 
 // Nop a call to a function that decreases in-game volume on pause
 void init_main_loop() {
-    patch::write_nop(reinterpret_cast<void*>(0x802a32a8));
+    patch::write_nop(relutil::relocate_addr(0x802a32a8));
 }
 
 }// namespace pause_volume_fix

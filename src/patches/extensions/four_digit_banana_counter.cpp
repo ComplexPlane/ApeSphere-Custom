@@ -1,6 +1,7 @@
 #include "four_digit_banana_counter.h"
 
 #include "internal/patch.h"
+#include "internal/relutil.h"
 #include "internal/tickable.h"
 #include "utils/ppcutil.h"
 
@@ -106,10 +107,10 @@ void create_new_banana_counter_sprites(u8* status, mkb::Sprite* pSVar1) {
 // sprite create function calling our sprite create function instead.
 void init_main_loop() {
     // In add_bananas, return if the current count after adding is less than 9999 instead of 999
-    patch::write_word(reinterpret_cast<void*>(0x802b8284), 0x2c00270f);// cmpwi r0, 9999
+    patch::write_word(relutil::relocate_addr(0x802b8284), 0x2c00270f);// cmpwi r0, 9999
 
     // In add_bananas, cap the max banana count to 9999 instead of 999
-    patch::write_word(reinterpret_cast<void*>(0x802b828c), PPC_INSTR_LI(PPC_R0, 9999));
+    patch::write_word(relutil::relocate_addr(0x802b828c), PPC_INSTR_LI(PPC_R0, 9999));
 
     // Change format string
     mkb::strcpy(mkb::sprite_banana_count_fmt_string, "%04d");

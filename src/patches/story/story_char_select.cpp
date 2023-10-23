@@ -4,6 +4,7 @@
 #include "internal/pad.h"
 #include "internal/patch.h"
 #include "internal/tickable.h"
+#include "internal/relutil.h"
 #include "mkb/mkb.h"
 
 namespace story_char_select {
@@ -32,7 +33,7 @@ static bool is_entering_story = false;
 // Overrides the return value of certain functions to force the chosen monkey to be
 // preloaded in place of AiAi
 void init_main_loop() {
-    patch::write_branch_bl(reinterpret_cast<void*>(0x803daffc),
+    patch::write_branch_bl(relutil::relocate_addr(0x803daffc),
                            reinterpret_cast<void*>(main::get_monkey_id_hook));
 }
 
@@ -49,19 +50,19 @@ void set_nameentry_filename() {
 // Also calls the function to set the default filename to the name of the selected
 // monkey, rather than deafulting to 'AIAI'.
 void init_main_game() {
-    patch::write_branch_bl(reinterpret_cast<void*>(0x808fcac4),
+    patch::write_branch_bl(relutil::relocate_addr(0x808fcac4),
                            reinterpret_cast<void*>(main::get_monkey_id_hook));
-    patch::write_branch_bl(reinterpret_cast<void*>(0x808ff120),
+    patch::write_branch_bl(relutil::relocate_addr(0x808ff120),
                            reinterpret_cast<void*>(main::get_monkey_id_hook));
-    patch::write_branch_bl(reinterpret_cast<void*>(0x80908894),
+    patch::write_branch_bl(relutil::relocate_addr(0x80908894),
                            reinterpret_cast<void*>(main::get_monkey_id_hook));
 
-    patch::write_branch_bl(reinterpret_cast<void*>(0x80906368),
+    patch::write_branch_bl(relutil::relocate_addr(0x80906368),
                            reinterpret_cast<void*>(set_nameentry_filename));
-    patch::write_nop(reinterpret_cast<void*>(0x8090636c));
-    patch::write_nop(reinterpret_cast<void*>(0x80906370));
-    patch::write_nop(reinterpret_cast<void*>(0x80906374));
-    patch::write_nop(reinterpret_cast<void*>(0x80906378));
+    patch::write_nop(relutil::relocate_addr(0x8090636c));
+    patch::write_nop(relutil::relocate_addr(0x80906370));
+    patch::write_nop(relutil::relocate_addr(0x80906374));
+    patch::write_nop(relutil::relocate_addr(0x80906378));
 
     // Lets the sel_ngc portion of the patch know we aren't entering story anymore
     // Also sets menu_stack_ptr to 1, ensuring we return to the Mode Select screen

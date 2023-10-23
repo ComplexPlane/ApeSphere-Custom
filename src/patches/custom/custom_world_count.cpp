@@ -3,6 +3,7 @@
 #include "internal/assembly.h"
 #include "internal/patch.h"
 #include "internal/tickable.h"
+#include "internal/relutil.h"
 #include "utils/ppcutil.h"
 
 // Allows for the number of worlds in story mode to be customized.
@@ -51,10 +52,10 @@ void init_sel_ngc() {
     // Update the practice mode story mode display counter to show the proper number of worlds
 
     // Visually update the indicator
-    patch::write_word(reinterpret_cast<void*>(0x8090dbd0),
+    patch::write_word(relutil::relocate_addr(0x8090dbd0),
                       (0x2c1a0000 | *active_tickable_ptr->active_value));
     // Update the indicator logic
-    patch::write_word(reinterpret_cast<void*>(0x80900f08),
+    patch::write_word(relutil::relocate_addr(0x80900f08),
                       PPC_INSTR_LI(PPC_R29, *active_tickable_ptr->active_value));
 }
 

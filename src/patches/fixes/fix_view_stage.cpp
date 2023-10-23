@@ -3,6 +3,7 @@
 #include "internal/patch.h"
 #include "internal/tickable.h"
 #include "utils/ppcutil.h"
+#include "internal/relutil.h"
 
 namespace fix_view_stage {
 
@@ -13,7 +14,7 @@ TICKABLE_DEFINITION((
 
 void init_main_game() {
     // Prevent background animations from animating twice as fast in 'View Stage'
-    patch::write_word(reinterpret_cast<void*>(0x80912d90), PPC_INSTR_NOP());
+    patch::write_word(relutil::relocate_addr(0x80912d90), PPC_INSTR_NOP());
 }
 
 }// namespace fix_view_stage

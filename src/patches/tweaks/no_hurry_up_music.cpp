@@ -14,8 +14,8 @@ TICKABLE_DEFINITION((
 
 // Nop out calls to start the hurry-up music. Call after main_game load
 void init_main_game() {
-    patch::write_nop(reinterpret_cast<void*>(0x808f509c));
-    patch::write_nop(reinterpret_cast<void*>(0x808f50a4));
+    patch::write_nop(relutil::relocate_addr(0x808f509c));
+    patch::write_nop(relutil::relocate_addr(0x808f50a4));
 }
 
 // The init function breaks the "Time Over" sound, as it checks to see if the

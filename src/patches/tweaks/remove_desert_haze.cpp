@@ -16,7 +16,7 @@ TICKABLE_DEFINITION((
 // instead of 0x7.
 // 0x2c00ffff = cmpwi r0, 0xffff
 void init_main_loop() {
-    patch::write_word(reinterpret_cast<void*>(0x802e4ed8), 0x2c00ffff);
+    patch::write_word(relutil::relocate_addr(0x802e4ed8), 0x2c00ffff);
 }
 
 }// namespace remove_desert_haze

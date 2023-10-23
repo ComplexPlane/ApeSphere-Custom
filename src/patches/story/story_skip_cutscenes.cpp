@@ -2,8 +2,8 @@
 
 #include "internal/patch.h"
 #include "internal/tickable.h"
+#include "internal/relutil.h"
 #include "mkb/mkb.h"
-
 
 namespace story_skip_cutscenes {
 
@@ -56,7 +56,7 @@ void dmd_scen_sceneplay_init_patch() {
     // If we're in 'world 11', initialize the credits sequence.
     if (active_state == WORLD_COUNT) {
         mkb::mode_flags = mkb::mode_flags | 0x100000;
-        patch::write_word(reinterpret_cast<void*>(0x8054dbdc), 0xffffffff);
+        patch::write_word(relutil::relocate_addr(0x8054dbdc), 0xffffffff);
         mkb::scen_info.mode = mkb::DMD_SCEN_GAME_CLEAR_INIT;
     }
 
@@ -73,14 +73,14 @@ void dmd_scen_sceneplay_init_patch() {
         mkb::OSSetCurrentHeap(mkb::chara_heap);
 
         mkb::mode_flags = mkb::mode_flags | 0x100000;
-        patch::write_word(reinterpret_cast<void*>(0x8054dbdc), 0xffffffff);
+        patch::write_word(relutil::relocate_addr(0x8054dbdc), 0xffffffff);
         mkb::scen_info.mode = mkb::DMD_SCEN_NAMEENTRY_INIT;
     }
 
     // If we're in 'world 13', initialize the game over sequence.
     else if (active_state == WORLD_COUNT + 2) {
         mkb::mode_flags = mkb::mode_flags | 0x100000;
-        patch::write_word(reinterpret_cast<void*>(0x8054dbdc), 0xffffffff);
+        patch::write_word(relutil::relocate_addr(0x8054dbdc), 0xffffffff);
         mkb::scen_info.mode = mkb::DMD_SCEN_GAME_OVER_INIT;
     }
 
@@ -101,8 +101,8 @@ void dmd_scen_sel_floor_init_patch() {
     mkb::scen_info.mode = mkb::DMD_SCEN_SEL_FLOOR_MAIN;
 
     // I have no idea what this does, it's something the game does in the original function
-    u32 data = *reinterpret_cast<u32*>(0x8054dbc0);
-    patch::write_word(reinterpret_cast<void*>(0x8054dbc0), data | 2);
+    u32 data = *relutil::relocate_addr(0x8054dbc0);
+    patch::write_word(relutil::relocate_addr(0x8054dbc0), data | 2);
     mkb::dmd_scen_sel_floor_init_child();
 }
 
@@ -110,11 +110,11 @@ void dmd_scen_sel_floor_init_patch() {
 void handle_preloading() {
     if (mkb::main_mode != mkb::MD_GAME || mkb::main_game_mode != mkb::STORY_MODE) {
         // Preload files normally
-        patch::write_word(reinterpret_cast<void*>(0x803db048), 0x9421ffd0);
+        patch::write_word(relutil::relocate_addr(0x803db048), 0x9421ffd0);
     }
     else {
         // Do not preload files
-        patch::write_blr(reinterpret_cast<void*>(0x803db048));
+        patch::write_blr(relutil::relocate_addr(0x803db048));
     }
 }
 

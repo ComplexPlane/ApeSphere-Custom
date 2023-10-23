@@ -3,6 +3,7 @@
 #include "assembly.h"
 #include "mkb/mkb.h"
 #include "patch.h"
+#include "relutil.h"
 #include <cstdarg>
 
 using mkb::strlen;
@@ -22,7 +23,7 @@ const mkb::GXColor PURPLE = {0xb1, 0x5a, 0xff, 0xff};
 const mkb::GXColor GREEN = {0x00, 0xff, 0x00, 0xff};
 
 void init() {
-    patch::write_branch(reinterpret_cast<void*>(0x802aeca4),
+    patch::write_branch(relutil::relocate_addr(0x802aeca4),
                         reinterpret_cast<void*>(main::full_debug_text_color));
 }
 

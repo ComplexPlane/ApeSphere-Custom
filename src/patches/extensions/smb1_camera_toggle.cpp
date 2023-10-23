@@ -5,6 +5,7 @@
 #include "internal/tickable.h"
 #include "mkb/mkb.h"
 #include "utils/ppcutil.h"
+#include "internal/relutil.h"
 
 namespace smb1_camera_toggle {
 
@@ -28,14 +29,14 @@ void tick() {
         (mkb::sub_mode == mkb::SMD_GAME_PLAY_MAIN || mkb::sub_mode == mkb::SMD_GAME_READY_MAIN)) {
         if (smb1_cam_toggled) {
             if (mkb::cameras[0].mode == 0x4c) mkb::cameras[0].mode = 1;
-            patch::write_word(reinterpret_cast<void*>(0x802886c8), PPC_INSTR_LI(PPC_R0, 0x400));
+            patch::write_word(relutil::relocate_addr(0x802886c8), PPC_INSTR_LI(PPC_R0, 0x400));
             mkb::g_camera_turn_rate_scale = 0.6875;
             mkb::camera_pivot_height = -0.5;
             mkb::camera_height = 1;
         }
         else {
             if (mkb::cameras[0].mode == 0x1) mkb::cameras[0].mode = 0x4c;
-            patch::write_word(reinterpret_cast<void*>(0x802886c8), PPC_INSTR_LI(PPC_R0, 0x200));
+            patch::write_word(relutil::relocate_addr(0x802886c8), PPC_INSTR_LI(PPC_R0, 0x200));
             mkb::g_camera_turn_rate_scale = 0.75;
             mkb::camera_pivot_height = 0.18;
             mkb::camera_height = 0.8;

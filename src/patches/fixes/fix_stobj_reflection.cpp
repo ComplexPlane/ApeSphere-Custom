@@ -4,6 +4,7 @@
 #include "internal/patch.h"
 #include "internal/tickable.h"
 #include "utils/ppcutil.h"
+#include "internal/relutil.h"
 
 namespace fix_stobj_reflection {
 
@@ -18,15 +19,15 @@ TICKABLE_DEFINITION((
 // determine if the proper flag was set. TODO: Maybe make this more elegant?
 // 0x38000000 = li r0, 0
 void init_main_loop() {
-    patch::write_word(reinterpret_cast<void*>(0x802ca480), PPC_INSTR_LI(PPC_R0, 0x0));
-    patch::write_branch_bl(reinterpret_cast<void*>(0x802c9434),
+    patch::write_word(relutil::relocate_addr(0x802ca480), PPC_INSTR_LI(PPC_R0, 0x0));
+    patch::write_branch_bl(relutil::relocate_addr(0x802c9434),
                            reinterpret_cast<void*>(main::reflection_draw_stage_hook));
 }
 
 // Checks the stage object's model flag to determine if the proper flag is set
 // during the 'view stage' sequence.
 void init_main_game() {
-    patch::write_branch_bl(reinterpret_cast<void*>(0x80913F34),
+    patch::write_branch_bl(relutil::relocate_addr(0x80913F34),
                            reinterpret_cast<void*>(main::reflection_view_stage_hook));
 }
 

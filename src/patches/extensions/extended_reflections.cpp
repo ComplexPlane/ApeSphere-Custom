@@ -2,6 +2,7 @@
 
 #include "internal/patch.h"
 #include "internal/tickable.h"
+#include "internal/relutil.h"
 #include "mkb/mkb.h"
 
 namespace extended_reflections {
@@ -69,8 +70,8 @@ void mirror_tick() {
 
 // Hooks into the reflection-handling function, calling our function instead
 void init_main_loop() {
-    patch::write_branch_bl(reinterpret_cast<void*>(0x8034b270), reinterpret_cast<void*>(mirror_tick));
-    patch::write_nop(reinterpret_cast<void*>(0x8034b11c));
+    patch::write_branch_bl(relutil::relocate_addr(0x8034b270), reinterpret_cast<void*>(mirror_tick));
+    patch::write_nop(relutil::relocate_addr(0x8034b11c));
     nearest_dist_to_mir = -1.0;
     distance_to_mirror = 0.0;
     active_ig = nullptr;

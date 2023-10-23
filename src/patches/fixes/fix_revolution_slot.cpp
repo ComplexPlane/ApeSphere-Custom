@@ -3,6 +3,7 @@
 #include "internal/patch.h"
 #include "internal/tickable.h"
 #include "utils/ppcutil.h"
+#include "internal/relutil.h"
 
 namespace fix_revolution_slot {
 
@@ -14,7 +15,7 @@ TICKABLE_DEFINITION((
 // Always return 'false' for a specific function that checks if the stage ID
 // is 348 when determining whether or not to handle level loading specially
 void init_main_loop() {
-    patch::write_word(reinterpret_cast<void*>(0x802ca9fc), PPC_INSTR_LI(PPC_R3, 0x0));
+    patch::write_word(relutil::relocate_addr(0x802ca9fc), PPC_INSTR_LI(PPC_R3, 0x0));
 }
 
 }// namespace fix_revolution_slot

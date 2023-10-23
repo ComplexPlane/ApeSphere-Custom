@@ -2,6 +2,7 @@
 
 #include "internal/patch.h"
 #include "internal/tickable.h"
+#include "internal/relutil.h"
 #include "mkb/mkb.h"
 
 // Removes the playpoint notification screens when exiting from story mode or challenge mode, or after a 'game over'.
@@ -15,15 +16,15 @@ TICKABLE_DEFINITION((
 
 void init_main_game() {
     // Removes playpoint screen when exiting challenge/story mode.
-    patch::write_nop(reinterpret_cast<void*>(0x808f9ecc));
-    patch::write_nop(reinterpret_cast<void*>(0x808f9eec));
+    patch::write_nop(relutil::relocate_addr(0x808f9ecc));
+    patch::write_nop(relutil::relocate_addr(0x808f9eec));
 
     // Removes playpoint screen after the 'game over' sequence.
-    patch::write_nop(reinterpret_cast<void*>(0x808f801c));
-    patch::write_nop(reinterpret_cast<void*>(0x808f803c));
+    patch::write_nop(relutil::relocate_addr(0x808f801c));
+    patch::write_nop(relutil::relocate_addr(0x808f803c));
 
     // Removes playpoint screen when saving game data in story mode.
-    patch::write_nop(reinterpret_cast<void*>(0x80274c94));
+    patch::write_nop(relutil::relocate_addr(0x80274c94));
 }
 
 void tick() {
