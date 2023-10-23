@@ -1,8 +1,8 @@
 #include "story_skip_cutscenes.h"
 
 #include "internal/patch.h"
-#include "internal/tickable.h"
 #include "internal/relutil.h"
+#include "internal/tickable.h"
 #include "mkb/mkb.h"
 
 namespace story_skip_cutscenes {
@@ -34,6 +34,7 @@ void mute_all_music_tracks() {
 // Skips the first cutscene. Replaces the original dmd_scen_newgame_main function, which sets up cutscene stuff.
 void dmd_scen_newgame_main_patch() {
     mute_all_music_tracks();
+
     mkb::g_SoftStreamStart_with_some_defaults_2(0);
     mkb::scen_info.next_world = 0;
     mkb::scen_info.mode = mkb::DMD_SCEN_SEL_WORLD_INIT;
@@ -101,7 +102,7 @@ void dmd_scen_sel_floor_init_patch() {
     mkb::scen_info.mode = mkb::DMD_SCEN_SEL_FLOOR_MAIN;
 
     // I have no idea what this does, it's something the game does in the original function
-    u32 data = *relutil::relocate_addr(0x8054dbc0);
+    u32 data = *static_cast<u32*>(relutil::relocate_addr(0x8054dbc0));
     patch::write_word(relutil::relocate_addr(0x8054dbc0), data | 2);
     mkb::dmd_scen_sel_floor_init_child();
 }

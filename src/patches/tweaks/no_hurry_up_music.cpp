@@ -1,6 +1,7 @@
 #include "no_hurry_up_music.h"
 
 #include "internal/patch.h"
+#include "internal/relutil.h"
 #include "internal/tickable.h"
 #include "mkb/mkb.h"
 

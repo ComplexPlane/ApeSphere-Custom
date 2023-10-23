@@ -2,6 +2,7 @@
 
 #include "internal/patch.h"
 #include "internal/tickable.h"
+#include "internal/relutil.h"
 #include "utils/ppcutil.h"
 
 namespace fix_labyrinth_camera {

@@ -1,6 +1,7 @@
 #include "disable_tutorial.h"
 
 #include "internal/patch.h"
+#include "internal/relutil.h"
 #include "internal/tickable.h"
 #include "utils/ppcutil.h"
 

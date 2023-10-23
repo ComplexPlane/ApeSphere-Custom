@@ -1,6 +1,7 @@
 #include "remove_desert_haze.h"
 
 #include "internal/patch.h"
+#include "internal/relutil.h"
 #include "internal/tickable.h"
 
 namespace remove_desert_haze {
