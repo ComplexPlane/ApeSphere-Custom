@@ -2,8 +2,8 @@
 
 #include "internal/assembly.h"
 #include "internal/patch.h"
-#include "internal/tickable.h"
 #include "internal/relutil.h"
+#include "internal/tickable.h"
 #include "utils/ppcutil.h"
 
 // Allows for the number of worlds in story mode to be customized.

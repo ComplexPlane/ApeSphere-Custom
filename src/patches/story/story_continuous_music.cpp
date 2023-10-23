@@ -2,8 +2,8 @@
 
 #include "internal/assembly.h"
 #include "internal/patch.h"
-#include "internal/tickable.h"
 #include "internal/relutil.h"
+#include "internal/tickable.h"
 
 namespace story_continuous_music {
 

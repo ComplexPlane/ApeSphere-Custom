@@ -3,8 +3,8 @@
 #include "internal/assembly.h"
 #include "internal/pad.h"
 #include "internal/patch.h"
-#include "internal/tickable.h"
 #include "internal/relutil.h"
+#include "internal/tickable.h"
 #include "mkb/mkb.h"
 
 namespace story_char_select {

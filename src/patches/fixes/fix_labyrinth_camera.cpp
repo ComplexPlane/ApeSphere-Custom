@@ -1,8 +1,8 @@
 #include "fix_labyrinth_camera.h"
 
 #include "internal/patch.h"
-#include "internal/tickable.h"
 #include "internal/relutil.h"
+#include "internal/tickable.h"
 #include "utils/ppcutil.h"
 
 namespace fix_labyrinth_camera {

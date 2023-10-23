@@ -7,9 +7,9 @@
 namespace gameheaps {
 
 TICKABLE_DEFINITION((
-    .name = "merged-heaps",
-    .description = "Join disparate game heaps into one continuous heap",
-    .init_main_loop = init_main_loop, ))
+        .name = "merged-heaps",
+        .description = "Join disparate game heaps into one continuous heap",
+        .init_main_loop = init_main_loop, ))
 
 static void create_merged_game_heaps(int heap_config_idx) {
     // We don't care about the original intended heap sizes, but there's a flag that says where the
@@ -17,7 +17,8 @@ static void create_merged_game_heaps(int heap_config_idx) {
     if (mkb::heap_configs[heap_config_idx].flags & 1) {
         mkb::OSSetArenaLo(reinterpret_cast<void*>(mkb::g_some_other_heap_lo));
         mkb::OSSetArenaHi(reinterpret_cast<void*>(mkb::g_some_other_heap_hi));
-    } else {
+    }
+    else {
         mkb::OSSetArenaLo(reinterpret_cast<void*>(mkb::g_some_dead_heap_mem_lo));
         mkb::OSSetArenaHi(reinterpret_cast<void*>(mkb::g_some_dead_heap_mem_hi));
     }
@@ -55,4 +56,4 @@ void init_main_loop() {
     patch::hook_function(mkb::destroy_game_heaps, destroy_merged_game_heaps);
 }
 
-}  // namespace gameheaps
+}// namespace gameheaps

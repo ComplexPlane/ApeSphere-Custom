@@ -1,9 +1,9 @@
 #include "fix_revolution_slot.h"
 
 #include "internal/patch.h"
+#include "internal/relutil.h"
 #include "internal/tickable.h"
 #include "utils/ppcutil.h"
-#include "internal/relutil.h"
 
 namespace fix_revolution_slot {
 
