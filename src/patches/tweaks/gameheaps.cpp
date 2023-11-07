@@ -8,7 +8,7 @@ namespace gameheaps {
 
 TICKABLE_DEFINITION((
         .name = "merged-heaps",
-        .description = "Join disparate game heaps into one continuous heap",
+        .description = "Join the separate game heaps into one continuous heap",
         .init_main_loop = init_main_loop, ))
 
 static void create_merged_game_heaps(int heap_config_idx) {
