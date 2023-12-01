@@ -22,6 +22,7 @@ lwz r3, 0(r29)
 blr                             # Continue as normal (object is drawn)
 
 .global reflection_view_stage_hook
+.extern reflection_view_stage_asmhook
 
 reflection_view_stage_hook:
 lis r3, 0x8054                  # Checks the render flag at 0x8054
@@ -35,8 +36,8 @@ lwz r0, 0(r3)                   # Loads the effect bitflag of the current model
 rlwinm r0, r0, 0, 0x1d, 0x1d    # Checks if flag 0x4 (unknown 3) is set
 cmplwi r0, 0
 bne returnDrawGame             # If it's not, don't draw it
-lis r3, 0x8091
-ori r3, r3, 0x3f5c
+lis r3, reflection_view_stage_asmhook@h
+ori r3, r3, reflection_view_stage_asmhook@l
 mtlr r3
 blr
                                 # Continue with the next model (object is not drawn)
