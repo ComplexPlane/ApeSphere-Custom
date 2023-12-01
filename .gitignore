@@ -288,3 +288,4 @@ __pycache__/
 /.qtc_clangd
 /out
 /.cache
+.DS_Store
