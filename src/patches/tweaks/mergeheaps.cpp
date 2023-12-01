@@ -1,14 +1,14 @@
-#include "gameheaps.h"
+#include "mergeheaps.h"
 
 #include "internal/tickable.h"
 
 #include "patch.h"
 
-namespace gameheaps {
+namespace mergeheaps {
 
 TICKABLE_DEFINITION((
         .name = "merged-heaps",
-        .description = "Join the separate game heaps into one continuous heap",
+        .description = "Join the segmented game heaps into one continuous heap",
         .init_main_loop = init_main_loop, ))
 
 static void create_merged_game_heaps(int heap_config_idx) {
@@ -56,4 +56,4 @@ void init_main_loop() {
     patch::hook_function(mkb::destroy_game_heaps, destroy_merged_game_heaps);
 }
 
-}// namespace gameheaps
+}// namespace mergeheaps

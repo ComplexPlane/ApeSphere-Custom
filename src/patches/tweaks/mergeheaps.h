@@ -1,6 +1,6 @@
 #pragma once
 
-namespace gameheaps {
+namespace mergeheaps {
 
 void init_main_loop();
 
